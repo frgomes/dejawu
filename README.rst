@@ -1,11 +1,4 @@
-*_dejawu* is an exploratory tentative to provide Dojo Toolkit with ScalaJS
-
-Status
-======
-
-1. No ScalaJS code yet.
-2. Some declarative Dojo code in Javascript for initial exploration of ideas.
-3. Currently still defining minimum set of widgets to be provided via ScalaJS.
+*dejawu* is an exploratory tentative to provide Dojo Toolkit with ScalaJS
 
 
 Quick guide for the impatient
@@ -15,6 +8,14 @@ Quick guide for the impatient
 
     $ sbt update clean run
     $ firefox http://localhost:9000/purejs
+
+
+Status
+======
+
+1. No ScalaJS code yet.
+2. Some declarative Dojo code in Javascript for initial exploration of ideas.
+3. Currently still defining minimum set of widgets to be provided via ScalaJS.
 
 
 TODO List
