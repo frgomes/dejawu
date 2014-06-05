@@ -1,0 +1,15 @@
+*~
+#[^#]+#
+*.pyc
+*.egg-info
+*.egg
+*.o
+*.a
+.cache
+.coverage
+/.idea/
+/.idea_modules/
+/build/
+/dist/
+/logs/
+target/
