@@ -11,13 +11,36 @@ object Build extends sbt.Build {
   val appName = "dejawu"
   val appVersion = "0.1-SNAPSHOT"
 
-   //
+  //
+  // Dependencies
+  ///
+  val scalajs_v   = "0.4.4"
+  val scalatags_v = "0.2.5"
+  val mockito_v   = "1.9.5"
+
+  val scalatags_js = scalatags_v + "-JS"
+
+  val rootDeps = Seq(
+    "com.scalatags" %% "scalatags" % scalatags_js
+    // test -----
+    , "org.mockito" % "mockito-all" % mockito_v % "test"
+  )
+
+  val scalajsDeps = Seq(
+    "org.scala-lang.modules.scalajs" %% "scalajs-dom" % scalajs_v, // "0.4",
+    "com.scalatags" %% "scalatags" % scalatags_js
+    // test -----
+    , "org.scala-lang.modules.scalajs" %% "scalajs-jasmine-test-framework" % scalaJSVersion % "test"
+  )
+
+
+  //
   // Settings
   ///
-  lazy val scalaSettings = play.Project.playScalaSettings ++ Seq(
+  val scalaSettings = play.Project.playScalaSettings ++ Seq(
     scalacOptions ++= Seq("-feature"))
 
-  lazy val scalajsSettings =
+  val scalajsSettings =
     scalaJSSettings ++ Seq(
       name := appName + "-scalajs",
       version := appVersion,
@@ -26,23 +49,6 @@ object Build extends sbt.Build {
 
 
   //
-  // Dependencies
-  ///
-  val mockitoVersion = "1.9.5"
-
-  lazy val rootDeps = Seq(
-    // test
-    "org.mockito" % "mockito-all" % mockitoVersion % "test" )
-
-  lazy val scalajsDeps = Seq(
-    "org.scala-lang.modules.scalajs" %% "scalajs-dom" % "0.4",
-    "com.scalatags" %% "scalatags" % "0.2.5-JS"
-    // test -----
-    , "org.scala-lang.modules.scalajs" %% "scalajs-jasmine-test-framework" % scalaJSVersion % "test"
-  )
-
-
-   //
   // Projects and modules
   ///
 

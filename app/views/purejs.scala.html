@@ -21,6 +21,7 @@
         width: 100%;
         height: 100%;
     }
+
 </style>
 
 <div id="borderContainer" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="gutters:true, liveSplitters:false">
@@ -75,7 +76,37 @@
 
         </div>
         <div data-dojo-type="dijit/layout/AccordionPane" title="Grid">
-            To be done
+Work in progress
+<!-- -----------------------------------------------------------------------------------------------------------  - -->
+            <!--
+           <div data-dojo-type="dojo/store/Memory"
+                 data-dojo-id="myStore2"
+                 data-dojo-props="data: [
+                     {name: 'Song 1', genre: 'genre 1', composer: 'Composer 1', year: '1982' },
+                     {name: 'Song 2', genre: 'genre 2', composer: 'Composer 2', year: '1982' }
+                     ]">
+            </div>
+            <div data-dojo-type="gridx/Grid"
+                 data-dojo-props="
+                     store: myStore2,
+                     cacheClass: 'gridx/core/model/cache/Sync',
+                     structure: [
+                         { id: 'column_1', field: 'name', name: 'Name', width: '50%' },
+                         { id: 'column_2', field: 'genre', name: 'Genre', width: 'auto' },
+                         { id: 'column_3', field: 'composer', name: 'Composer', width: 'auto' },
+                         { id: 'column_4', field: 'year', name: 'Year', width: 'auto' }
+                     ],
+                     selectRowTriggerOnCell: true,
+                     modules: [
+                         'gridx/modules/VirtualVScroller',
+                         'gridx/modules/ColumnResizer',
+                         'gridx/modules/extendedSelect/Row',
+                         'gridx/modules/SingleSort',
+                     ]">
+            </div>
+            -->
+<!-- -----------------------------------------------------------------------------------------------------------  - -->
+
         </div>
         <div data-dojo-type="dijit/layout/AccordionPane" title="Even more fancy">
         </div>
@@ -84,7 +115,76 @@
     </div><!-- end AccordionContainer -->
     <div data-dojo-type="dijit/layout/TabContainer" data-dojo-props="region:'center', tabStrip:true">
         <div data-dojo-type="dijit/layout/ContentPane" title="Common widgets" selected="true">
-            To be done (common widgets)
+
+            <div>
+                dijit/form/Button
+                <button type="button" data-dojo-type="dijit/form/Button">Click me too!
+                    <script type="dojo/on" data-dojo-event="click" data-dojo-args="evt">
+                        require(["dojo/dom"], function(dom){
+                            dom.byId("result2").innerHTML += "Thank you! ";
+                        });
+                    </script>
+                </button>
+                <button type="button" data-dojo-type="dijit/form/Button"
+                        data-dojo-props="iconClass:'dijitEditorIcon dijitEditorIconCut', showLabel: false">clear
+                    <script type="dojo/on" data-dojo-event="click" data-dojo-args="evt">
+                        require(["dojo/dom"], function(dom){
+                            dom.byId("result2").innerHTML = "";
+                        });
+                    </script>
+                </button>
+                <button data-dojo-type="dijit/form/ToggleButton" data-dojo-props="iconClass:'dijitCheckBoxIcon', checked: true">
+                    Toggle me
+                </button>
+                <div id="result2"></div>
+            </div>
+
+            <div>
+                dijit/form/Select (TODO: store)
+                <select name="select1"
+                        data-dojo-type="dijit/form/Select">
+                    <option value="TN">Tennessee</option>
+                    <option value="VA" selected="selected">Virginia</option>
+                    <option value="WA">Washington</option>
+                    <option value="FL">Florida</option>
+                    <option value="CA">California</option>
+                </select>
+            </div>
+
+            <div>
+                dijit/form/MultiSelect
+                <select id="fruit" name="fruit" size="4"
+                        data-dojo-type="dijit/form/MultiSelect">
+                    <option value="AP">Apples</option>
+                    <option value="OR">Oranges</option>
+                    <option value="PE" selected="selected">Pears</option>
+                </select>
+            </div>
+
+            <div>
+                dijit/form/ComboBox
+                <div data-dojo-id="stateStore"
+                     data-dojo-type="dojo/store/Memory"
+                     data-dojo-props="data: [
+                            { id: 'EG', name:'Egypt'    },
+                            { id: 'KE', name:'Kenya'    },
+                            { id: 'SD', name:'Sudan'    },
+                            { id: 'CN', name:'China'    },
+                            { id: 'IN', name:'India'    },
+                            { id: 'RU', name:'Russia'   },
+                            { id: 'MN', name:'Mongolia' },
+                            { id: 'DE', name:'Germany'  },
+                            { id: 'FR', name:'France'   },
+                            { id: 'ES', name:'Spain'    },
+                            { id: 'IT', name:'Italy'    }
+                 ]"></div>
+                <input id="stateInput"
+                       data-dojo-type="dijit/form/ComboBox"
+                       data-dojo-props="store:stateStore, searchAttr:'name'"
+                       name="state" value="Egypt"/>
+            </div>
+
+
         </div>
         <div data-dojo-type="dijit/layout/ContentPane" title="Forms">
             To be done (forms)
@@ -95,13 +195,25 @@
     </div>
 </div>
 
-<script>
+<script type="text/javascript">
     require(["dojo/parser"]);
     require(["dijit/layout/ContentPane"]);
     require(["dijit/layout/BorderContainer"]);
     require(["dijit/layout/AccordionContainer", "dijit/layout/AccordionPane"]);
-    require(["dojo/store/Memory", "dijit/tree/ObjectStoreModel", "dijit/Tree"]);
     require(["dijit/layout/TabContainer"]);
+    require(["dijit/form/Button"]);
+    require(["dijit/form/ToggleButton"]);
+    require(["dijit/form/Select"]);
+    require(["dijit/form/MultiSelect"]);
+    require(["dijit/form/ComboBox"]);
+
+	// require([
+	//   "gridx/Grid",
+	//   "gridx/core/model/cache/Sync",
+	//   "gridx/modules/VirtualVScroller",
+	//   "gridx/modules/ColumnResizer",
+	//   "gridx/modules/extendedSelect/Row",
+	//   "gridx/modules/SingleSort"]);
 </script>
 
 </body>
