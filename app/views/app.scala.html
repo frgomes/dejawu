@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>dejawu</title>
+    <script>dojoConfig = {parseOnLoad: true}</script>
+    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.9.3/dojo/dojo.js"></script>
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.9.3/dijit/themes/claro/claro.css">
+</head>
+<body class="claro">
+<!--
+    <div id="loading">Loading<BR/><img src="@routes.Assets.at("ajax-loader.gif")"/></div>
+
+
+    < ! - - for production (play dist), use the optimized version instead - - >
+    < ! - - <script type="text/javascript" src="@routes.Assets.at("js/dejawu-scalajs-opt.js")"></script> - - >
+-->
+
+    <div id="container"></div>
+    <script type="text/javascript" src="@routes.Assets.at("js/dejawu-scalajs-preopt.js")"></script>
+    <script type="text/javascript">ScalaJSExample().main();</script>
+</body>
+</html>
