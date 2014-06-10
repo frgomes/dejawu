@@ -19,7 +19,7 @@ object ScalaJSExample {
   }
 
   private def render() =
-    dijit.select(name := "select1")(// , `data-dojo-type`:="dijit/form/Select")(
+    dijit.select(name := "select1")(
       option(value := "TN")("Tennessee"),
       option(value := "VA")("Virginia"),
       option(value := "WA")("Washington"),
@@ -28,16 +28,15 @@ object ScalaJSExample {
 
 }
 
-
 object dijit {
 
-  val select = "select".tag[Select]
+  val select = "select".tag[Select].apply(
+    "data-dojo-type".attr := "dijit/form/Select"
+  )
 
-  class Select extends dom.HTMLDivElement {
-    //TODO: need to add custom attributes, such as: `data-dojo-type`:="dijit/form/Select"
-    //TODO: implicit def ArrayModifier[A <% Modifier](xs: Array[A]) = new SeqModifier[A](xs.toSeq)
-  }
+  class Select extends dom.HTMLDivElement
 }
+
 
 
 

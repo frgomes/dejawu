@@ -11,3 +11,4 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 # playground on javascript
 GET     /purejs                     controllers.Application.purejs
+GET     /app                        controllers.Application.app

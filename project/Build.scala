@@ -1,9 +1,12 @@
+import com.typesafe.sbt.packager.universal.UniversalKeys
 import sbt._
 import Keys._
 import scala.scalajs.sbtplugin.ScalaJSPlugin._
+import scala.scalajs.sbtplugin.ScalaJSPlugin.ScalaJSKeys._
+import scala.Some
 
 
-object Build extends sbt.Build {
+object Build extends sbt.Build with UniversalKeys {
 
    //
   // Application
@@ -14,7 +17,7 @@ object Build extends sbt.Build {
   //
   // Dependencies
   ///
-  val scalajs_v   = "0.4.4"
+  val scalajs_v   = "0.4"
   val scalatags_v = "0.2.5"
   val mockito_v   = "1.9.5"
 
@@ -47,10 +50,23 @@ object Build extends sbt.Build {
       libraryDependencies ++= scalajsDeps
     )
 
+  val scalajvmSettings =
+    play.Project.playScalaSettings ++ Seq(
+      scalajsOutputDir := (crossTarget in Compile).value / "classes" / "public" / "js",
+      compile in Compile <<= (compile in Compile).dependsOn(preoptimizeJS in (scalajs, Compile)),
+      dist <<= dist.dependsOn(optimizeJS in (scalajs, Compile))
+    ) ++ (
+      // ask scalajs project to put its outputs in scalajsOutputDir
+      Seq(packageExternalDepsJS, packageInternalDepsJS, packageExportedProductsJS, preoptimizeJS, optimizeJS) map {
+        packageJSKey => crossTarget in (scalajs, Compile, packageJSKey) := scalajsOutputDir.value }
+      )
 
   //
   // Projects and modules
   ///
+
+  override def rootProject = Some(root)
+
 
   // In future, this project will be demo website similar to
   // * http://dojotoolkit.org/api/
@@ -60,16 +76,15 @@ object Build extends sbt.Build {
     rootDeps,
     path = file(""),
     settings = scalaSettings
-  ).settings(scalaSettings: _*)
-    //TODO:: .dependsOn(scalajs)
-    //TODO:: .aggregate(scalajs)
+  ).settings(scalajvmSettings: _*)
+    .dependsOn(scalajs)
+    .aggregate(scalajs)
 
-
-  //TODO: Module dejawu-scalajs is what we are really interested to write
   lazy val scalajs = Project(
     id   = appName + "-scalajs",
     base = file("scalajs")
   ) settings (scalajsSettings: _*)
+
   lazy val scalajsOutputDir = Def.settingKey[File]("directory for javascript files output by scalajs")
 
 }

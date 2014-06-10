@@ -19,19 +19,7 @@ trait Application extends Controller {
     Ok(views.html.purejs())
   }
 
-}
-
-
-//XXX remove this block
-/*
-import play.api._
-import play.api.mvc._
-
-object Application extends Controller {
-
-  def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+  def app = Action {
+    Ok(views.html.app())
   }
-
 }
-*/
