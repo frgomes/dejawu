@@ -10,6 +10,8 @@ import scala.collection.{SortedMap, mutable}
 import scalatags.all._
 import scalatags._
 
+import dojo.`data-dojo-id`
+import dojo.`data-dojo-props`
 
 
 @JSExport
@@ -28,24 +30,25 @@ object ScalaJSExample {
         option(value := "VA")("Virginia"),
         option(value := "WA")("Washington"),
         option(value := "FL")("Florida"),
-        option(value := "CA")("California"))
-      ,dojo.store.memory().apply(
-          dojo.`data-dojo-id` := "stateStore").apply(
-            dojo.`data-dojo-props` := """data: [
-              |{ id: 'EG', name:'Egypt'    },
-              |{ id: 'KE', name:'Kenya'    },
-              |{ id: 'SD', name:'Sudan'    },
-              |{ id: 'CN', name:'China'    },
-              |{ id: 'IN', name:'India'    },
-              |{ id: 'RU', name:'Russia'   },
-              |{ id: 'MN', name:'Mongolia' },
-              |{ id: 'DE', name:'Germany'  },
-              |{ id: 'FR', name:'France'   },
-              |{ id: 'ES', name:'Spain'    },
-              |{ id: 'IT', name:'Italy'    }
-              |]""".stripMargin)
-      ,dojo.dijit.combobox(name := "combobox1", value := "Egypt").apply(
-          dojo.`data-dojo-props` := "store:stateStore, searchAttr:'name'")
+        option(value := "CA")("California")),
+      dojo.store.memory(
+        `data-dojo-id`    := "stateStore",
+        `data-dojo-props` := """data: [
+                                    |{ id: 'EG', name:'Egypt'    },
+                                    |{ id: 'KE', name:'Kenya'    },
+                                    |{ id: 'SD', name:'Sudan'    },
+                                    |{ id: 'CN', name:'China'    },
+                                    |{ id: 'IN', name:'India'    },
+                                    |{ id: 'RU', name:'Russia'   },
+                                    |{ id: 'MN', name:'Mongolia' },
+                                    |{ id: 'DE', name:'Germany'  },
+                                    |{ id: 'FR', name:'France'   },
+                                    |{ id: 'ES', name:'Spain'    },
+                                    |{ id: 'IT', name:'Italy'    }
+                                    |]""".stripMargin),
+      dojo.dijit.combobox(
+        name := "combobox1", value := "Egypt",
+        `data-dojo-props` := "store:stateStore, searchAttr:'name'")
     )
 }
 
@@ -72,13 +75,7 @@ object dojo {
     class MemoryElement extends dom.HTMLDivElement
   }
 
-  /**
-   * Provides extension methods on strings to fit them into Scalatag fragments.
-   */
   implicit class DojoConversions(s: String) {
-    /**
-     * Converts the string to a [[HtmlTag]]
-     */
     def dtag[T](dtype: String) = {
       if (!Escaping.validTag(s))
         throw new IllegalArgumentException(
