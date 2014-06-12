@@ -5,8 +5,11 @@ import scala.scalajs.{js => js}
 import scala.scalajs.js.Dynamic.{ global => g }
 import scala.scalajs.js.annotation.JSExport
 
+import scala.collection.{SortedMap, mutable}
+
 import scalatags.all._
 import scalatags._
+
 
 
 @JSExport
@@ -19,41 +22,70 @@ object ScalaJSExample {
   }
 
   private def render() =
-    dijit.select(name := "select1")(
-      option(value := "TN")("Tennessee"),
-      option(value := "VA")("Virginia"),
-      option(value := "WA")("Washington"),
-      option(value := "FL")("Florida"),
-      option(value := "CA")("California"))
-
+    div(
+      dojo.dijit.select(name := "select1")(
+        option(value := "TN")("Tennessee"),
+        option(value := "VA")("Virginia"),
+        option(value := "WA")("Washington"),
+        option(value := "FL")("Florida"),
+        option(value := "CA")("California"))
+      ,dojo.store.memory().apply(
+          dojo.`data-dojo-id` := "stateStore").apply(
+            dojo.`data-dojo-props` := """data: [
+              |{ id: 'EG', name:'Egypt'    },
+              |{ id: 'KE', name:'Kenya'    },
+              |{ id: 'SD', name:'Sudan'    },
+              |{ id: 'CN', name:'China'    },
+              |{ id: 'IN', name:'India'    },
+              |{ id: 'RU', name:'Russia'   },
+              |{ id: 'MN', name:'Mongolia' },
+              |{ id: 'DE', name:'Germany'  },
+              |{ id: 'FR', name:'France'   },
+              |{ id: 'ES', name:'Spain'    },
+              |{ id: 'IT', name:'Italy'    }
+              |]""".stripMargin)
+      ,dojo.dijit.combobox(name := "combobox1", value := "Egypt").apply(
+          dojo.`data-dojo-props` := "store:stateStore, searchAttr:'name'")
+    )
 }
 
-object dijit {
 
-  val select = "select".tag[Select].apply(
-    "data-dojo-type".attr := "dijit/form/Select"
-  )
+object dojo {
 
-  class Select extends dom.HTMLDivElement
+  val `data-dojo-id`    : Attr = "data-dojo-id".attr
+  val `data-dojo-type`  : Attr = "data-dojo-type".attr
+  val `data-dojo-props` : Attr = "data-dojo-props".attr
+
+  object dijit {
+    val select   = "select".dtag[form.SelectElement]("dijit/form/Select")
+    val combobox = "input".dtag[form.ComboBoxElement]("dijit/form/ComboBox")
+
+    object form {
+      class SelectElement extends dom.HTMLSelectElement
+      class ComboBoxElement extends dom.HTMLSelectElement
+    }
+  }
+
+  object store {
+    val memory   = "div".dtag[MemoryElement]("dojo/store/Memory")
+
+    class MemoryElement extends dom.HTMLDivElement
+  }
+
+  /**
+   * Provides extension methods on strings to fit them into Scalatag fragments.
+   */
+  implicit class DojoConversions(s: String) {
+    /**
+     * Converts the string to a [[HtmlTag]]
+     */
+    def dtag[T](dtype: String) = {
+      if (!Escaping.validTag(s))
+        throw new IllegalArgumentException(
+          s"Illegal tag name: $s is not a valid XML tag name"
+        )
+      HtmlTag[T](s, Nil, SortedMap(`data-dojo-type`.name -> dtype))
+    }
+  }
+
 }
-
-
-
-
-/*
-  <div data-dojo-id="stateStore"
-       data-dojo-type="dojo/store/Memory"
-       data-dojo-props="data: [
-                            { id: 'EG', name:'Egypt'    },
-                            { id: 'KE', name:'Kenya'    },
-                            { id: 'SD', name:'Sudan'    },
-                            { id: 'CN', name:'China'    },
-                            { id: 'IN', name:'India'    },
-                            { id: 'RU', name:'Russia'   },
-                            { id: 'MN', name:'Mongolia' },
-                            { id: 'DE', name:'Germany'  },
-                            { id: 'FR', name:'France'   },
-                            { id: 'ES', name:'Spain'    },
-                            { id: 'IT', name:'Italy'    }
-
-*/
