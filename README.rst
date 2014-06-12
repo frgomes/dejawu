@@ -21,13 +21,20 @@ Status
 Next steps
 ==========
 
-1. Add buttons, comboboxes and other very common widgets
-2. Provide more flexible data stores, with coherent data structures and type checking
-3. Provide reactive data stores
-4. Add a grid widget
+1. Employ code generation as much as possible as a first step.
+   The idea is employing the SBT build for code generation, reading a configuration file
+   and creating simple wrappers as much as we can.
+   See: https://github.com/frgomes/dejawu/blob/master/project/widgets.properties
+
+Medium term goals
+=================
+   
+11. Provide more flexible data stores, with coherent data structures and type checking
+12. Provide reactive data stores
+13. Add a grid widget
 
 Long term goals
 ===============
 
-1. Create a single-page demo similar to http://demos.dojotoolkit.org/demos/themePreviewer/demo.html
-2. Create a demo similar to http://demos.dojotoolkit.org/demos/
+101. Create a single-page demo similar to http://demos.dojotoolkit.org/demos/themePreviewer/demo.html
+102. Create a demo similar to http://demos.dojotoolkit.org/demos/
