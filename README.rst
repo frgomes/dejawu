@@ -7,22 +7,27 @@ Quick guide for the impatient
 ::
 
     $ sbt update clean run
-    $ firefox http://localhost:9000/purejs
+    $ firefox http://localhost:9000/purejs # for HTML + JS
+    $ firefox http://localhost:9000/app    # for HTML + scala-js
 
 
 Status
 ======
 
-1. No ScalaJS code yet.
-2. Some declarative Dojo code in Javascript for initial exploration of ideas.
-3. Currently still defining minimum set of widgets to be provided via ScalaJS.
+1. Code based on scalatags
+2. Basic skeleton which explores the organization of the code
+3. Just a few graphical and non-graphical components at the moment.
 
+Next steps
+==========
 
-TODO List
-=========
+1. Add buttons, comboboxes and other very common widgets
+2. Provide more flexible data stores, with coherent data structures and type checking
+3. Provide reactive data stores
+4. Add a grid widget
 
-1. Add buttons, comboboxes and other very common widgets (to be defined)
-2. Add a grid widget
-3. Add support for forms
-4. Replace hardcoded data by AMD/Deferred/Reactive (whatever it is called!)
-5. Implement minimum requirements in ScalaJS (based on scalatags possibly?)
+Long term goals
+===============
+
+1. Create a single-page demo similar to http://demos.dojotoolkit.org/demos/themePreviewer/demo.html
+2. Create a demo similar to http://demos.dojotoolkit.org/demos/
