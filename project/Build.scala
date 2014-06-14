@@ -43,6 +43,13 @@ object Build extends sbt.Build with UniversalKeys {
   val scalaSettings = play.Project.playScalaSettings ++ Seq(
     scalacOptions ++= Seq("-feature"))
 
+  val sharedSettings =
+    scalaJSSettings ++ Seq(
+      name := appName + "-shared",
+      version := appVersion,
+      libraryDependencies ++= scalajsDeps
+    )
+
   val scalajsSettings =
     scalaJSSettings ++ Seq(
       name := appName + "-scalajs",
@@ -74,11 +81,16 @@ object Build extends sbt.Build with UniversalKeys {
   lazy val root = play.Project(
     appName, appVersion,
     rootDeps,
-    path = file(""),
+    path = file("play"),
     settings = scalaSettings
   ).settings(scalajvmSettings: _*)
-    .dependsOn(scalajs)
-    .aggregate(scalajs)
+    .dependsOn(shared,scalajs)
+    .aggregate(shared,scalajs)
+
+  lazy val shared = Project(
+    id   = appName + "-shared",
+    base = file("shared")
+  ) settings (sharedSettings: _*)
 
   lazy val scalajs = Project(
     id   = appName + "-scalajs",
