@@ -40,6 +40,7 @@ object Build extends sbt.Build with UniversalKeys {
   //
   // Settings
   ///
+
   val scalaSettings = play.Project.playScalaSettings ++ Seq(
     scalacOptions ++= Seq("-feature"))
 
@@ -68,6 +69,13 @@ object Build extends sbt.Build with UniversalKeys {
         packageJSKey => crossTarget in (scalajs, Compile, packageJSKey) := scalajsOutputDir.value }
       )
 
+  val toolsSettings = play.Project.playScalaSettings ++ Seq(
+      name := appName + "-tools",
+      version := appVersion
+      // , libraryDependencies ++= scalajsDeps
+    )
+
+
   //
   // Projects and modules
   ///
@@ -84,8 +92,8 @@ object Build extends sbt.Build with UniversalKeys {
     path = file("play"),
     settings = scalaSettings
   ).settings(scalajvmSettings: _*)
-    .dependsOn(shared,scalajs)
-    .aggregate(shared,scalajs)
+    .dependsOn(shared,scalajs,tools)
+    .aggregate(shared,scalajs,tools)
 
   lazy val shared = Project(
     id   = appName + "-shared",
@@ -98,5 +106,10 @@ object Build extends sbt.Build with UniversalKeys {
   ) settings (scalajsSettings: _*)
 
   lazy val scalajsOutputDir = Def.settingKey[File]("directory for javascript files output by scalajs")
+
+  lazy val tools = Project(
+    id   = appName + "-tools",
+    base = file("tools")
+  ) settings (toolsSettings: _*)
 
 }
