@@ -1,24 +1,20 @@
 package org.dejawu
 
-import org.scalajs.dom
-import scala.scalajs.{js => js}
-import scala.scalajs.js.Dynamic.{ global => g }
-import scala.scalajs.js.annotation.JSExport
+import scala.scalajs.js
+import js.annotation.JSExport
+import js.Dynamic.{ global => g }
 
-import scala.collection.{SortedMap, mutable}
+// import org.scalajs.dom
 
-import scalatags.all._
-import scalatags._
+import scalatags.Text._
+import scalatags.Text.all._
 
-import dojo.`data-dojo-id`
-import dojo.`data-dojo-props`
+import DojoTags._
 
 
-@JSExport
-object ScalaJSExample {
+object ScalaJSExample extends js.JSApp {
 
-  @JSExport
-  def main(args: Array[String]): Unit = {
+  def main() = {
     val container = g.document.getElementById("container")
     container.innerHTML = render().toString()
   }
@@ -50,39 +46,4 @@ object ScalaJSExample {
         name := "combobox1", value := "Egypt",
         `data-dojo-props` := "store:stateStore, searchAttr:'name'")
     )
-}
-
-
-object dojo {
-
-  val `data-dojo-id`    : Attr = "data-dojo-id".attr
-  val `data-dojo-type`  : Attr = "data-dojo-type".attr
-  val `data-dojo-props` : Attr = "data-dojo-props".attr
-
-  object dijit {
-    val select   = "select".dtag[form.SelectElement]("dijit/form/Select")
-    val combobox = "input".dtag[form.ComboBoxElement]("dijit/form/ComboBox")
-
-    object form {
-      class SelectElement extends dom.HTMLSelectElement
-      class ComboBoxElement extends dom.HTMLSelectElement
-    }
-  }
-
-  object store {
-    val memory   = "div".dtag[MemoryElement]("dojo/store/Memory")
-
-    class MemoryElement extends dom.HTMLDivElement
-  }
-
-  implicit class DojoConversions(s: String) {
-    def dtag[T](dtype: String) = {
-      if (!Escaping.validTag(s))
-        throw new IllegalArgumentException(
-          s"Illegal tag name: $s is not a valid XML tag name"
-        )
-      HtmlTag[T](s, Nil, SortedMap(`data-dojo-type`.name -> dtype))
-    }
-  }
-
 }
