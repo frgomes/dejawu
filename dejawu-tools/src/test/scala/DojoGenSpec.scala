@@ -4,9 +4,9 @@ import java.io.InputStream
 import org.scalatest._
 
 
-class DojoGeneratorSpec extends FeatureSpec with GivenWhenThen {
+class DojoGenSpec extends FeatureSpec with GivenWhenThen {
 
-  val tool = new DojoGenerator
+  val tool = new DojoGen
 
   feature("Ability to split line into components") {
     scenario("an empty line") {
@@ -87,30 +87,30 @@ class DojoGeneratorSpec extends FeatureSpec with GivenWhenThen {
   feature("Ability to handle scopes") {
 
     scenario("Empty scopes") {
-      assert(tool.scopeChange(null, null) === "")
-      assert(tool.scopeChange("",   ""  ) === "")
+      assert(tool.scopeChange(null, null) .toString === "")
+      assert(tool.scopeChange("",   ""  ) .toString === "")
     }
 
     scenario("Same scopes") {
-      assert(tool.scopeChange("dojo.dijit", "dojo.dijit") === "")
+      assert(tool.scopeChange("dojo.dijit", "dojo.dijit") .toString === "")
     }
 
     scenario("Sibbling scopes") {
-      assert(tool.scopeChange("dojo",            "dojox")           === "}\nobject dojox {\n")
-      assert(tool.scopeChange("dojo.dijit",      "dojo.store")      === "  }\n  object store {\n")
-      assert(tool.scopeChange("dojo.dijit.form", "dojo.dijit.fake") === "    }\n    object fake {\n")
+      assert(tool.scopeChange("dojo",            "dojox")           .toString === "}\nobject dojox {\n")
+      assert(tool.scopeChange("dojo.dijit",      "dojo.store")      .toString === "  }\n  object store {\n")
+      assert(tool.scopeChange("dojo.dijit.form", "dojo.dijit.fake") .toString === "    }\n    object fake {\n")
     }
 
     scenario("Inner scopes") {
-      assert(tool.scopeChange("dojo.dijit", "dojo.dijit.form") === "    object form {\n")
-      assert(tool.scopeChange("dojo",       "dojo.dijit.form") === "  object dijit {\n    object form {\n")
-      assert(tool.scopeChange("",           "dojo.dijit.form") === "object dojo {\n  object dijit {\n    object form {\n")
+      assert(tool.scopeChange("dojo.dijit", "dojo.dijit.form") .toString === "    object form {\n")
+      assert(tool.scopeChange("dojo",       "dojo.dijit.form") .toString === "  object dijit {\n    object form {\n")
+      assert(tool.scopeChange("",           "dojo.dijit.form") .toString === "object dojo {\n  object dijit {\n    object form {\n")
     }
 
     scenario("Outer scopes") {
-      assert(tool.scopeChange("dojo.dijit.form", "dojo.dijit") === "    }\n")
-      assert(tool.scopeChange("dojo.dijit.form", "dojo"      ) === "    }\n  }\n")
-      assert(tool.scopeChange("dojo.dijit.form", ""          ) === "    }\n  }\n}\n")
+      assert(tool.scopeChange("dojo.dijit.form", "dojo.dijit") .toString === "    }\n")
+      assert(tool.scopeChange("dojo.dijit.form", "dojo"      ) .toString === "    }\n  }\n")
+      assert(tool.scopeChange("dojo.dijit.form", ""          ) .toString === "    }\n  }\n}\n")
     }
 
   }
@@ -120,7 +120,7 @@ class DojoGeneratorSpec extends FeatureSpec with GivenWhenThen {
     scenario("A single entry is passed as test") {
       assert( tool.generate(
         List(
-          Entry("dojo.dijit.form.ComboBox", "input",  "dom.HTMLSelectElement"))) ===
+          Entry("dojo.dijit.form.ComboBox", "input",  "dom.HTMLSelectElement"))).toString ===
         """
           |package org.dejawu
           |
@@ -148,17 +148,16 @@ class DojoGeneratorSpec extends FeatureSpec with GivenWhenThen {
           |  }
           |}
           |
-          |  implicit class DojoConversions(s: String) {
-          |    def dtag[T <: Platform.Base](dtype: String) = {
-          |      if (!Escaping.validTag(s))
-          |        throw new IllegalArgumentException(s"Illegal tag name: $s is not a valid XML tag name")
-          |      TypedTag(s, List(List(DojoTags.`data-dojo-type` := dtype)), false)
-          |      //makeAbstractTypedTag[T](s, List(List(`data-dojo-type` := dtype)), false)
-          |    }
-          |    //private def makeAbstractTypedTag[T <: Platform.Base](tag: String, modifiers: List[Seq[Modifier[Builder]]], void: Boolean): TypedTag[T] = {
-          |    //  TypedTag(tag, modifiers, void)
-          |    //}
+          |implicit class DojoConversions(s: String) {
+          |  def dtag[T <: Platform.Base](dtype: String) = {
+          |    if (!Escaping.validTag(s))
+          |      throw new IllegalArgumentException(s"Illegal tag name: $s is not a valid XML tag name")
+          |    TypedTag(s, List(List(DojoTags.`data-dojo-type` := dtype)), false)
+          |    //makeAbstractTypedTag[T](s, List(List(`data-dojo-type` := dtype)), false)
           |  }
+          |  //private def makeAbstractTypedTag[T <: Platform.Base](tag: String, modifiers: List[Seq[Modifier[Builder]]], void: Boolean): TypedTag[T] = {
+          |  //  TypedTag(tag, modifiers, void)
+          |  //}
           |}""".stripMargin )
     }
 
@@ -167,7 +166,7 @@ class DojoGeneratorSpec extends FeatureSpec with GivenWhenThen {
         List(
           Entry("dojo.store.Memory",        "div",    "dom.HTMLDivElement"),
           Entry("dojo.dijit.form.Select",   "select", "dom.HTMLSelectElement"),
-          Entry("dojo.dijit.form.ComboBox", "input",  "dom.HTMLSelectElement"))) ===
+          Entry("dojo.dijit.form.ComboBox", "input",  "dom.HTMLSelectElement"))).toString ===
         """
           |package org.dejawu
           |
@@ -201,19 +200,79 @@ class DojoGeneratorSpec extends FeatureSpec with GivenWhenThen {
           |  }
           |}
           |
-          |  implicit class DojoConversions(s: String) {
-          |    def dtag[T <: Platform.Base](dtype: String) = {
-          |      if (!Escaping.validTag(s))
-          |        throw new IllegalArgumentException(s"Illegal tag name: $s is not a valid XML tag name")
-          |      TypedTag(s, List(List(DojoTags.`data-dojo-type` := dtype)), false)
-          |      //makeAbstractTypedTag[T](s, List(List(`data-dojo-type` := dtype)), false)
-          |    }
-          |    //private def makeAbstractTypedTag[T <: Platform.Base](tag: String, modifiers: List[Seq[Modifier[Builder]]], void: Boolean): TypedTag[T] = {
-          |    //  TypedTag(tag, modifiers, void)
-          |    //}
+          |implicit class DojoConversions(s: String) {
+          |  def dtag[T <: Platform.Base](dtype: String) = {
+          |    if (!Escaping.validTag(s))
+          |      throw new IllegalArgumentException(s"Illegal tag name: $s is not a valid XML tag name")
+          |    TypedTag(s, List(List(DojoTags.`data-dojo-type` := dtype)), false)
+          |    //makeAbstractTypedTag[T](s, List(List(`data-dojo-type` := dtype)), false)
           |  }
+          |  //private def makeAbstractTypedTag[T <: Platform.Base](tag: String, modifiers: List[Seq[Modifier[Builder]]], void: Boolean): TypedTag[T] = {
+          |  //  TypedTag(tag, modifiers, void)
+          |  //}
           |}""".stripMargin)
     }
+  }
+
+  feature("Ability parse command line arguments") {
+    scenario("Parsing a code generation call with custom configuration file") {
+      val cli = new DojoGenCLI(Array("-c", "configuration.ini", "DojoTags.scala"))
+      assert( cli.config.get === Some("configuration.ini") )
+      assert( cli.output.get === Some("DojoTags.scala") )
+    }
+    scenario("Parsing a code generation call specifying standard input") {
+      val cli = new DojoGenCLI(Array("-c", "-", "DojoTags.scala"))
+      assert( cli.config.get === Some("-") )
+      assert( cli.output.get === Some("DojoTags.scala") )
+    }
+    scenario("Parsing a typical code generation call") {
+      val cli = new DojoGenCLI(Array("DojoTags.scala"))
+      assert( cli.config.get === None )
+      assert( cli.output.get === Some("DojoTags.scala") )
+    }
+
+    //TODO: these test cases
+    // The following test cases call System.exit and interrupt execution of the test suite :(
+
+    // scenario("Requesting help") {
+    //   val cli = new DojoGenCLI(Array("--help"))
+    // }
+    // scenario("Requesting version information") {
+    //   val cli = new DojoGenCLI(Array("--version"))
+    // }
+  }
+
+  import java.io.{FileInputStream,FileOutputStream}
+
+  feature("Ability parse command line arguments and generate output") {
+    scenario("Parsing a code generation call with custom configuration file") {
+      val cli  = new DojoGenCLI(Array("-c", "/home/rgomes/workspace/dejawu/dejawu-tools/src/main/resources/widgets.properties", "/tmp/DojoTags1.scala"))
+      val tool = new DojoGen
+      tool.generate( cli.output.get, cli.config.get)
+    }
+
+    //TODO: these test cases
+    //failure when calling getResourceAsStream
+
+    // scenario("Ability to find resources") {
+    //   val is : InputStream = this.getClass.getResourceAsStream("widgets.properties")
+    //   assert( is != null)
+    // }
+    // scenario("Parsing a typical code generation call") {
+    //   val cli  = new DojoGenCLI(Array("/tmp/DojoTags2.scala"))
+    //   val tool = new DojoGen
+    //   tool.generate( cli.output.get, cli.config.get)
+    // }
+
+
+    //TODO: these test cases
+    //should be necessary to intercept stdin in order to do this
+
+    // scenario("Parsing a code generation call with input from stdin") {
+    //   val cli  = new DojoGenCLI(Array("-c", "-", "/tmp/DojoTags3.scala"))
+    //   val tool = new DojoGen
+    //   tool.generate( cli.output.get, cli.config.get)
+    // }
   }
 
 }

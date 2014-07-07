@@ -7,5 +7,3 @@ addSbtPlugin("org.scala-lang.modules.scalajs" % "scalajs-sbt-plugin" % "0.5.0")
 
 //addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.3.0")
 
-addSbtPlugin("org.ensime" %% "ensime-sbt-cmd" % "0.1.4-SNAPSHOT")
-
