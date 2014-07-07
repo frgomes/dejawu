@@ -158,7 +158,7 @@ class DojoGen {
     prologue.append( body(entries) ).append( epilogue )
 
   def generate(os: OutputStream, is: InputStream)  : Unit =
-    os.write( generate( os, Source.fromInputStream(is, "utf-8") ) .toString .getBytes )
+    os.write( generate( os, Source.fromInputStream(is) ) .toString .getBytes )
 
   def generate(os: OutputStream, is: Source)  : Unit =
     os.write( generate( parse(is) ) .toString .getBytes )
@@ -169,9 +169,9 @@ class DojoGen {
     val os : OutputStream = new FileOutputStream(output.get)
     // config can be taken from resources, from stdin or from a file
     val is : Source = config match {
-      case None      => Source.fromInputStream( this.getClass.getResourceAsStream("widgets.properties"), "utf-8" )
+      case None      => Source.fromInputStream( this.getClass.getResourceAsStream("/widgets.properties") )
       case Some("-") => io.Source.stdin
-      case Some(_)   => Source.fromFile(config.get, "utf-8")
+      case Some(_)   => Source.fromFile(config.get)
     }
     generate(os, is)
   }
