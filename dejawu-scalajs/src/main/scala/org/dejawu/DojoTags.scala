@@ -10,7 +10,7 @@ import scalatags.Platform
 import scalatags.generic
 import scalatags.text
 
-object DojoTags {
+object DojoAttr {
   val `data-dojo-id`    : Attr = "data-dojo-id".attr
   val `data-dojo-type`  : Attr = "data-dojo-type".attr
   val `data-dojo-props` : Attr = "data-dojo-props".attr
@@ -103,7 +103,7 @@ implicit class DojoConversions(s: String) {
   def dtag[T <: Platform.Base](dtype: String) = {
     if (!Escaping.validTag(s))
       throw new IllegalArgumentException(s"Illegal tag name: $s is not a valid XML tag name")
-    TypedTag(s, List(List(DojoTags.`data-dojo-type` := dtype)), false)
+    TypedTag(s, List(List(DojoAttr.`data-dojo-type` := dtype)), false)
     //makeAbstractTypedTag[T](s, List(List(`data-dojo-type` := dtype)), false)
   }
   //private def makeAbstractTypedTag[T <: Platform.Base](tag: String, modifiers: List[Seq[Modifier[Builder]]], void: Boolean): TypedTag[T] = {

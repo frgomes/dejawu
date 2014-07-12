@@ -17,15 +17,13 @@ object DejawuBuild extends Build {
   )
 
   val depsJS = Seq(
-    "org.scala-lang.modules.scalajs" %% "scalajs-dom" % "0.6",
-    "org.scala-lang.modules.scalajs" %% "scalajs-jasmine-test-framework" % scalaJSVersion % "test",
-    "com.scalatags"                  %% "scalatags" % "0.3.5"
+    "org.scala-lang.modules.scalajs" %%% "scalajs-dom" % "0.6",
+    "org.scala-lang.modules.scalajs" %%  "scalajs-jasmine-test-framework" % scalaJSVersion % "test",
+    "com.scalatags"                  %%  "scalatags" % "0.3.5"
   )
 
 
-
-  val basedir = file(".")
-
+  val basedir : File   = file(".")
 
 
   lazy val root = Project(id="dejawu", base=basedir)
@@ -84,6 +82,8 @@ object DejawuBuild extends Build {
     } finally {
       os.close()
     }
-    List(file(dojoTags))
+    // return empty list because the generated file
+    // will be picked up anyway
+    List()
   }
 }
