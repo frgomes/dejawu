@@ -6,7 +6,9 @@ object DojoGen {
   def main(args: Array[String]) {
     val cli  = new DojoGenCLI(args)
     val tool = new DojoGen
-    tool.generate( cli.output.get, cli.config.get)
+    println(s"****** ${cli.output.get}")
+    println(s"****** ${cli.config.get}")
+    tool.generate( cli.output.get, cli.config.get )
   }
 
 }
