@@ -246,23 +246,20 @@ class DojoGenSpec extends FeatureSpec with GivenWhenThen {
 
   feature("Ability parse command line arguments and generate output") {
     scenario("Parsing a code generation call with custom configuration file") {
-      val cli  = new DojoGenCLI(Array("-c", "/home/rgomes/workspace/dejawu/dejawu-tools/src/main/resources/widgets.properties", "/tmp/DojoTags1.scala"))
+      val cli  = new DojoGenCLI(Array("-c", "dejawu-tools/src/main/resources/widgets.properties", "/tmp/DojoTags1.scala"))
       val tool = new DojoGen
       tool.generate( cli.output.get, cli.config.get)
     }
 
-    //TODO: these test cases
-    //failure when calling getResourceAsStream
-
-    // scenario("Ability to find resources") {
-    //   val is : InputStream = this.getClass.getResourceAsStream("widgets.properties")
-    //   assert( is != null)
-    // }
-    // scenario("Parsing a typical code generation call") {
-    //   val cli  = new DojoGenCLI(Array("/tmp/DojoTags2.scala"))
-    //   val tool = new DojoGen
-    //   tool.generate( cli.output.get, cli.config.get)
-    // }
+    scenario("Ability to find resources") {
+      val is : InputStream = this.getClass.getResourceAsStream("/widgets.properties")
+      assert( is != null)
+    }
+    scenario("Parsing a typical code generation call using widgets.properties under src/main/resources") {
+      val cli  = new DojoGenCLI(Array("/tmp/DojoTags2.scala"))
+      val tool = new DojoGen
+      tool.generate( cli.output.get, cli.config.get)
+    }
 
 
     //TODO: these test cases
