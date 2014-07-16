@@ -94,8 +94,8 @@ class DojoGen {
     |""".stripMargin
 
   def epilogue : StringBuilder = new StringBuilder ++= """
-    |implicit class DojoConversions(s: String) {
-    |  def dtag[T <: Platform.Base](dtype: String) = {
+    |class DojoConversions(s: String) {
+    |  implicit def dtag[T <: Platform.Base](dtype: String) = {
     |    if (!Escaping.validTag(s))
     |      throw new IllegalArgumentException(s"Illegal tag name: $s is not a valid XML tag name")
     |    TypedTag(s, List(List(DojoAttr.`data-dojo-type` := dtype)), false)
