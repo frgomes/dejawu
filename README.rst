@@ -1,4 +1,4 @@
-*dejawu* is an exploratory tentative to provide Dojo Toolkit with ScalaJS
+*dejawu* provides Dojo Toolkit wrappers for ScalaJS with Scalatags
 
 
 Quick guide for the impatient
@@ -19,8 +19,8 @@ Quick guide for the impatient
   of the first page. It also employs Dojo Toolkit behind the scenes.
 
 
-Status
-======
+Status for the impatient
+========================
 
 Rewrite due to migration to scalatags 0.3.8 is going on.
 
