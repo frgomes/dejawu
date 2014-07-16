@@ -19,12 +19,15 @@ Quick guide for the impatient
   of the first page. It also employs Dojo Toolkit behind the scenes.
 
 
-Current status
-==============
+Status
+======
 
 Rewrite due to migration to scalatags 0.3.8 is going on.
+
 * code generator is temporarily disabled
+
 * everything builds and compiles fine with SBT 0.13.5 and Scala 2.11.1
+
 * http://localhost:9000/app is temporarily down
 
   
@@ -59,31 +62,33 @@ SVG tags but also contain widgets from the `Dojo Toolkit`_ package.
 .. _`Dojo Toolkit` : http://demos.dojotoolkit.org/demos/
 
   
-Status
-======
+Planning
+========
+
+Done
+----
 
 1. Code based on scalatags
 2. Basic skeleton which explores the organization of the code
 3. Just a few graphical and non-graphical components at the moment.
 
 Next steps
-==========
+----------
 
 1. Employ code generation as much as possible as a first step.
    The code generator works, but it needs to be rewritten since scalatags 0.3.8
-   introduced new ways of defining widgets. The code generator is disabled for
-   the time being.
+   introduced new ways of defining widgets.
 
 
 Medium term goals
-=================
+-----------------
    
 11. Provide more flexible data stores, with coherent data structures and type checking
 12. Provide reactive data stores
 13. Add a grid widget
 
 Long term goals
-===============
+---------------
 
 101. Create a single-page demo similar to http://demos.dojotoolkit.org/demos/themePreviewer/demo.html
 102. Create a demo similar to http://demos.dojotoolkit.org/demos/
