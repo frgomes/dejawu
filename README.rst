@@ -28,14 +28,16 @@ Rewrite due to migration to scalatags 0.3.8 is going on.
 
 * everything builds and compiles fine with SBT 0.13.5 and Scala 2.11.1
 
-* http://localhost:9000/app is temporarily down
+* http://localhost:9000/app renders, but seems like Dojo styles are not being applied.
 
   
 What *dejawu* is about?
 =======================
 
-Imagine you would like to write a web application but you hate HTML/CSS/Javascript.
-You would like to employ a high level programming language, with strong type checking
+Imagine you would like to write a single-page web application, which looks like a
+regular desktop application, in the way GMail or Yahoo Mail look like.
+
+Imagine you would like to employ a high level programming language, with strong type checking
 and sophisticated features, instead of the old, horrible and error prone Javascript.
 
 Now it is possible. This is how:
