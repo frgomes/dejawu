@@ -28,7 +28,9 @@ Rewrite due to migration to scalatags 0.3.8 is going on.
 
 * everything builds and compiles fine with SBT 0.13.5 and Scala 2.11.1
 
-* http://localhost:9000/app renders, but seems like Dojo styles are not being applied.
+* http://localhost:9000/app renders as expected, presenting a few Dojo widgets.
+
+* Translator HTML -> ScalaJS (with Scalatags + Dejawu) is under early development.
 
   
 What *dejawu* is about?

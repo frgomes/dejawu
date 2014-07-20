@@ -20,6 +20,9 @@ trait DojoTags[Builder, Output <: FragT, FragT] extends Util[Builder, Output, Fr
     val toolbarseparator : TypedTag[Builder, Output, FragT]
     val tooltip          : TypedTag[Builder, Output, FragT]
     val tooltipdialog    : TypedTag[Builder, Output, FragT]
+    trait layout {
+      val bordercontainer : TypedTag[Builder, Output, FragT]
+    }
     trait form {
       val button            : TypedTag[Builder, Output, FragT]
       val checkbox          : TypedTag[Builder, Output, FragT]

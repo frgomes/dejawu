@@ -1,13 +1,11 @@
-package org.dejawu.tools
+package org.dejawu.tools.codegen
 
 
-object DojoGen {
+object CodeGen {
 
   def main(args: Array[String]) {
-    val cli  = new DojoGenCLI(args)
-    val tool = new DojoGen
-    println(s"****** ${cli.output.get}")
-    println(s"****** ${cli.config.get}")
+    val cli  = new CodeGenCLI(args)
+    val tool = new CodeGen
     tool.generate( cli.output.get, cli.config.get )
   }
 
@@ -40,7 +38,7 @@ case class Entry(widget: String, htmlTag: String, htmlElement: String) {
 }
 
 
-class DojoGen {
+class CodeGen {
 
   import java.io.{InputStream,OutputStream}
   import scala.io.Source

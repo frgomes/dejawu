@@ -1,10 +1,10 @@
-package org.dejawu.tools
+package org.dejawu.tools.codegen
 
 import org.rogach.scallop._
 
 
-class DojoGenCLI(_args : Array[String]) extends ScallopConf(_args) {
-  version("dojogen v0.1 (c) 2014, Richard Gomes")
+class CodeGenCLI(_args : Array[String]) extends ScallopConf(_args) {
+  version("codegen v0.1 (c) 2014, Richard Gomes")
   banner("""usage: dojogen [options] <trailing-arguments>
            |synopsis:
            |  Generates Dojo Toolkit wrappers for Dejawu.
@@ -12,8 +12,8 @@ class DojoGenCLI(_args : Array[String]) extends ScallopConf(_args) {
            |  Dejawu tags (which wrap Dojo Toolkit tags) can be intermixed with tags provided by Scalatags.
            |  More info on Dojo Toolkit: http://demos.dojotoolkit.org
            |               ScalaJS:      https://github.com/scala-js/scala-js
-           |               Dejawu:       https://github.com/frgomes/dejawu
            |               Scalatags:    https://github.com/lihaoyi/scalatags
+           |               Dejawu:       https://github.com/frgomes/dejawu
            |options:""".stripMargin)
   val config = opt[String]("config", short='c', default=None, descr="""Configuration which defines how Dojo wrappers should be generated. """ +
                                                                     """If "-" (without quotes) is passed, the configuration is read from stdin.""")

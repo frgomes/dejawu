@@ -1,12 +1,12 @@
-package org.dejawu.tools
+package org.dejawu.tools.codegen
 
 import java.io.InputStream
 import org.scalatest._
 
 
-class DojoGenSpec extends FeatureSpec with GivenWhenThen {
+class CodeGenSpec extends FeatureSpec with GivenWhenThen {
 
-  val tool = new DojoGen
+  val tool = new CodeGen
 
   feature("Ability to split line into components") {
     scenario("an empty line") {
@@ -216,17 +216,17 @@ class DojoGenSpec extends FeatureSpec with GivenWhenThen {
 
   feature("Ability parse command line arguments") {
     scenario("Parsing a code generation call with custom configuration file") {
-      val cli = new DojoGenCLI(Array("-c", "configuration.ini", "DojoTags.scala"))
+      val cli = new CodeGenCLI(Array("-c", "configuration.ini", "DojoTags.scala"))
       assert( cli.config.get === Some("configuration.ini") )
       assert( cli.output.get === Some("DojoTags.scala") )
     }
     scenario("Parsing a code generation call specifying standard input") {
-      val cli = new DojoGenCLI(Array("-c", "-", "DojoTags.scala"))
+      val cli = new CodeGenCLI(Array("-c", "-", "DojoTags.scala"))
       assert( cli.config.get === Some("-") )
       assert( cli.output.get === Some("DojoTags.scala") )
     }
     scenario("Parsing a typical code generation call") {
-      val cli = new DojoGenCLI(Array("DojoTags.scala"))
+      val cli = new CodeGenCLI(Array("DojoTags.scala"))
       assert( cli.config.get === None )
       assert( cli.output.get === Some("DojoTags.scala") )
     }
@@ -235,10 +235,10 @@ class DojoGenSpec extends FeatureSpec with GivenWhenThen {
     // The following test cases call System.exit and interrupt execution of the test suite :(
 
     // scenario("Requesting help") {
-    //   val cli = new DojoGenCLI(Array("--help"))
+    //   val cli = new CodeGenCLI(Array("--help"))
     // }
     // scenario("Requesting version information") {
-    //   val cli = new DojoGenCLI(Array("--version"))
+    //   val cli = new CodeGenCLI(Array("--version"))
     // }
   }
 
@@ -246,8 +246,8 @@ class DojoGenSpec extends FeatureSpec with GivenWhenThen {
 
   feature("Ability parse command line arguments and generate output") {
     scenario("Parsing a code generation call with custom configuration file") {
-      val cli  = new DojoGenCLI(Array("-c", "dejawu-tools/src/main/resources/widgets.properties", "/tmp/DojoTags1.scala"))
-      val tool = new DojoGen
+      val cli  = new CodeGenCLI(Array("-c", "dejawu-tools/src/main/resources/widgets.properties", "/tmp/DojoTags1.scala"))
+      val tool = new CodeGen
       tool.generate( cli.output.get, cli.config.get)
     }
 
@@ -256,8 +256,8 @@ class DojoGenSpec extends FeatureSpec with GivenWhenThen {
       assert( is != null)
     }
     scenario("Parsing a typical code generation call using widgets.properties under src/main/resources") {
-      val cli  = new DojoGenCLI(Array("/tmp/DojoTags2.scala"))
-      val tool = new DojoGen
+      val cli  = new CodeGenCLI(Array("/tmp/DojoTags2.scala"))
+      val tool = new CodeGen
       tool.generate( cli.output.get, cli.config.get)
     }
 
@@ -266,8 +266,8 @@ class DojoGenSpec extends FeatureSpec with GivenWhenThen {
     //should be necessary to intercept stdin in order to do this
 
     // scenario("Parsing a code generation call with input from stdin") {
-    //   val cli  = new DojoGenCLI(Array("-c", "-", "/tmp/DojoTags3.scala"))
-    //   val tool = new DojoGen
+    //   val cli  = new CodeGenCLI(Array("-c", "-", "/tmp/DojoTags3.scala"))
+    //   val tool = new CodeGen
     //   tool.generate( cli.output.get, cli.config.get)
     // }
   }

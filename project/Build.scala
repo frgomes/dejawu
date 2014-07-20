@@ -8,40 +8,52 @@ import com.typesafe.sbt.packager.universal.UniversalKeys
 
 object ApplicationBuild extends Build with UniversalKeys {
 
-  val scalajsOutputDir = Def.settingKey[File]("directory for javascript files output by scalajs")
-
-  override def rootProject = Some(webapp)
-
   val appName       = "dejawu"
+  val toolsSrcDir   = appName + "-tools"
   val sharedSrcDir  = appName + "-shared"
   val scalajsSrcDir = appName + "-scalajs"
   val webappSrcDir  = appName + "-play"
 
+   //
+  // projects
+  ///////////
 
-  lazy val webapp = Project(
-    id = webappSrcDir,
-    base = file(webappSrcDir)
-  ) enablePlugins (play.PlayScala) settings (webappSettings: _*) aggregate (scalajs)
+  override def rootProject = Some(webapp)
 
-  lazy val scalajs = Project(
-    id   = scalajsSrcDir,
-    base = file(scalajsSrcDir)
-  ) settings (scalajsSettings: _*)
+  lazy val webapp = Project(id = webappSrcDir, base = file(webappSrcDir))
+    .enablePlugins(play.PlayScala)
+    .settings(webappSettings: _*)
+    .aggregate (scalajs)
+    .dependsOn(tools)
 
-  lazy val sharedScala = Project(
-    id = sharedSrcDir,
-    base = file(sharedSrcDir)
-  ) settings (sharedScalaSettings: _*)
+  lazy val scalajs = Project(id = scalajsSrcDir, base = file(scalajsSrcDir))
+    .settings(scalajsSettings: _*)
+    .dependsOn(tools)
+
+  lazy val shared = Project(id = sharedSrcDir, base = file(sharedSrcDir))
+    .settings(sharedSettings: _*)
+    .dependsOn(tools)
+
+  lazy val tools = Project(id = toolsSrcDir, base = file(toolsSrcDir))
+    .settings(toolsSettings: _*)
+
+   //
+  // project settings
+  ///////////////////
+
+  val scalajsOutputDir = Def.settingKey[File]("directory for javascript files output by scalajs")
 
   lazy val webappSettings =
     Seq(
       name := webappSrcDir,
       version := Versions.app,
       scalaVersion := Versions.scala,
-      scalajsOutputDir := (crossTarget in Compile).value / "classes" / "public" / "javascripts",
-      compile in Compile <<= (compile in Compile) dependsOn (fastOptJS in (scalajs, Compile)),
-      dist <<= dist dependsOn (fullOptJS in (scalajs, Compile)),
       libraryDependencies ++= Dependencies.webapp,
+      // dependsOn
+      compile in Compile <<= (compile in Compile) dependsOn (fastOptJS in (scalajs, Compile)),
+      dist               <<= dist                 dependsOn (fullOptJS in (scalajs, Compile)),
+      // special settings
+      scalajsOutputDir := (crossTarget in Compile).value / "classes" / "public" / "javascripts",
       commands += preStartCommand
     ) ++ (
       // ask scalajs project to put its outputs in scalajsOutputDir
@@ -54,23 +66,36 @@ object ApplicationBuild extends Build with UniversalKeys {
       name := scalajsSrcDir,
       version := Versions.app,
       scalaVersion := Versions.scala,
+      libraryDependencies ++= Dependencies.scalajs,
+      // special settings
       persistLauncher := true,
-      persistLauncher in Test := false,
-      libraryDependencies ++= Dependencies.scalajs
+      persistLauncher in Test := false
     ) ++ sharedDirectorySettings
 
-  lazy val sharedScalaSettings =
+  lazy val sharedSettings =
     Seq(
-      name := "dejawu-shared",
+      name := sharedSrcDir,
       libraryDependencies ++= Dependencies.shared
     )
 
+  lazy val toolsSettings =
+    Seq(
+      name := toolsSrcDir,
+      version := Versions.app,
+      scalaVersion := Versions.scala,
+      libraryDependencies ++= Dependencies.tools
+    )
+
   lazy val sharedDirectorySettings = Seq(
-    unmanagedSourceDirectories   in Compile += file((file(".") / sharedSrcDir / "src" / "main" / "scala").getCanonicalPath),
-    unmanagedSourceDirectories   in Test    += file((file(".") / sharedSrcDir / "src" / "test" / "scala").getCanonicalPath),
-    unmanagedResourceDirectories in Compile += file(".") / sharedSrcDir / "src" / "main" / "resources",
-    unmanagedResourceDirectories in Test    += file(".") / sharedSrcDir / "src" / "test" / "resources"
+    unmanagedSourceDirectories   in Compile += file((file(sharedSrcDir) / "src" / "main" / "scala").getCanonicalPath),
+    unmanagedSourceDirectories   in Test    += file((file(sharedSrcDir) / "src" / "test" / "scala").getCanonicalPath),
+    unmanagedResourceDirectories in Compile += file(sharedSrcDir) / "src" / "main" / "resources",
+    unmanagedResourceDirectories in Test    += file(sharedSrcDir) / "src" / "test" / "resources"
   )
+
+   //
+  // intercepts play.Play.playStartCommand and runs fullOptJS before it
+  /////////////////////////////////////////////////////////////////////
 
   // Use reflection to rename the 'start' command to 'play-start'
   Option(play.Play.playStartCommand.getClass.getDeclaredField("name")) map { field =>
@@ -87,14 +112,24 @@ object ApplicationBuild extends Build with UniversalKeys {
 
 
 object Dependencies {
-  val shared = Seq(
+  val utest     = Seq()
+
+  //FIXME: replace scalatest by utest
+  val scalatest = Seq(
+    "org.scalatest" %% "scalatest" % "2.2.0" )
+
+  val tools   = scalatest ++ Seq(
+    "org.rogach" % "scallop_2.10" % Versions.scallop,
+    "org.ccil.cowan.tagsoup" % "tagsoup" % Versions.tagsoup )
+
+  val shared  = utest ++ Seq(
     "org.scala-lang.modules.scalajs" %%% "scalajs-dom" % Versions.scalajsDom,
     "com.scalatags"                  %%% "scalatags"   % Versions.scalatags )
 
   val scalajs = shared ++ Seq(
     "org.scala-lang.modules.scalajs" %% "scalajs-jasmine-test-framework" % scalaJSVersion % "test" )
 
-  val webapp = shared ++ Seq()
+  val webapp  = shared ++ Seq()
 }
 
 
@@ -103,6 +138,8 @@ object Versions {
   val scala = "2.11.1"
   val scalajsDom = "0.6"
   val scalatags = "0.3.8"
+  val scallop = "0.9.5"
+  val tagsoup = "1.2.1"
 }
 
 
@@ -113,10 +150,6 @@ object Versions {
 // Status: With scalatags 0.3.8, the code generator became useless.
 //         I've created sources by hand in the time being until scalatags stabilizes.
 //----------------------------------------------------------------------------------------------------------
-//
-// lazy val tools = Project(appName+"-tools", baseDirectory / (appName+"-tools"))
-//   .settings(
-//     libraryDependencies ++= depsTools)
 //
 // val dejawuCodeGenerator = TaskKey[Seq[File]]("codegen", "Generate DojoTags.scala")
 // def runCodeGenerator(javaSource: File, classpath: Seq[File]): Seq[File] = {
