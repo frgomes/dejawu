@@ -1,9 +1,13 @@
 import sbt._
 import Keys._
-import play.Play._
+import sbtassembly.Plugin._
+import AssemblyKeys._
+
 import scala.scalajs.sbtplugin.ScalaJSPlugin._
 import ScalaJSKeys._
+
 import com.typesafe.sbt.packager.universal.UniversalKeys
+import play.Play._
 
 
 object ApplicationBuild extends Build with UniversalKeys {
@@ -23,8 +27,7 @@ object ApplicationBuild extends Build with UniversalKeys {
   lazy val webapp = Project(id = webappSrcDir, base = file(webappSrcDir))
     .enablePlugins(play.PlayScala)
     .settings(webappSettings: _*)
-    .aggregate (scalajs)
-    .dependsOn(tools)
+    .aggregate (tools,scalajs)
 
   lazy val scalajs = Project(id = scalajsSrcDir, base = file(scalajsSrcDir))
     .settings(scalajsSettings: _*)
@@ -36,6 +39,7 @@ object ApplicationBuild extends Build with UniversalKeys {
 
   lazy val tools = Project(id = toolsSrcDir, base = file(toolsSrcDir))
     .settings(toolsSettings: _*)
+    .settings(assemblySettings: _*)
 
    //
   // project settings
@@ -51,7 +55,8 @@ object ApplicationBuild extends Build with UniversalKeys {
       libraryDependencies ++= Dependencies.webapp,
       // dependsOn
       compile in Compile <<= (compile in Compile) dependsOn (fastOptJS in (scalajs, Compile)),
-      dist               <<= dist                 dependsOn (fullOptJS in (scalajs, Compile)),
+      dist               <<= dist                 dependsOn (fullOptJS in (scalajs, Compile))
+                                                  dependsOn (assembly  in tools),
       // special settings
       scalajsOutputDir := (crossTarget in Compile).value / "classes" / "public" / "javascripts",
       commands += preStartCommand
@@ -83,6 +88,7 @@ object ApplicationBuild extends Build with UniversalKeys {
       name := toolsSrcDir,
       version := Versions.app,
       scalaVersion := Versions.scala,
+      resolvers += Resolver.sonatypeRepo("public"),
       libraryDependencies ++= Dependencies.tools
     )
 
@@ -119,8 +125,9 @@ object Dependencies {
     "org.scalatest" %% "scalatest" % "2.2.0" )
 
   val tools   = scalatest ++ Seq(
-    "org.rogach" % "scallop_2.10" % Versions.scallop,
-    "org.ccil.cowan.tagsoup" % "tagsoup" % Versions.tagsoup )
+    //XXX "org.rogach" % "scallop_2.10" % Versions.scallop,
+    "com.github.scopt"       %% "scopt"   % Versions.scopt,
+    "org.ccil.cowan.tagsoup" %  "tagsoup" % Versions.tagsoup )
 
   val shared  = utest ++ Seq(
     "org.scala-lang.modules.scalajs" %%% "scalajs-dom" % Versions.scalajsDom,
@@ -138,7 +145,8 @@ object Versions {
   val scala = "2.11.1"
   val scalajsDom = "0.6"
   val scalatags = "0.3.8"
-  val scallop = "0.9.5"
+  //XXX val scallop = "0.9.5"
+  val scopt = "3.2.0"
   val tagsoup = "1.2.1"
 }
 

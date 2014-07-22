@@ -1,14 +1,43 @@
 package org.dejawu.tools.codegen
 
 
+case class CmdLine(input: String = null, output: String = null)
+
+
+class CLI(args : Array[String]) {
+  private val parser =
+    new scopt.OptionParser[CmdLine]("codegen") {
+      head("""usage: dojogen [<input>] [<output>]
+             |synopsis:
+             |  Generates Dojo Toolkit wrappers for Dejawu.
+             |  Dejawu employs ScalaJS in order to deliver rich single page webapps written in Scala.
+             |  Dejawu tags (which wrap Dojo Toolkit tags) can be intermixed with tags provided by Scalatags.
+             |  More info on Dojo Toolkit: http://demos.dojotoolkit.org
+             |               ScalaJS:      https://github.com/scala-js/scala-js
+             |               Scalatags:    https://github.com/lihaoyi/scalatags
+             |               Dejawu:       https://github.com/frgomes/dejawu
+             |options:""".stripMargin)
+      arg[String]("<input>")
+        .optional()
+        .action { (o, c) => c.copy( input = o ) }
+        .text("""Input .properties file or "-" (without quotes) for stdin""")
+      arg[String]("<output>")
+        .optional()
+        .action { (o, c) => c.copy( output = o ) }
+        .text("""Output .scala or "-" (without quotes) for stdout""")
+    }
+
+  def parse : Option[CmdLine] = parser.parse(args, CmdLine())
+}
+
+
 object CodeGen {
-
   def main(args: Array[String]) {
-    val cli  = new CodeGenCLI(args)
+    val cmd  = new CLI(args).parse
     val tool = new CodeGen
-    tool.generate( cli.output.get, cli.config.get )
+    if (cmd.isDefined)
+      tool.generate( Some(cmd.get.output), Some(cmd.get.input) )
   }
-
 }
 
 
@@ -163,15 +192,15 @@ class CodeGen {
   def generate(os: OutputStream, is: Source)  : Unit =
     os.write( generate( parse(is) ) .toString .getBytes )
 
-  def generate(output: Option[String], config: Option[String]) : Unit = {
+  def generate(output: Option[String], input: Option[String]) : Unit = {
     import java.io.{FileInputStream,FileOutputStream}
     // output is never None, since the CLI guarantees this condition
     val os : OutputStream = new FileOutputStream(output.get)
     // config can be taken from resources, from stdin or from a file
-    val is : Source = config match {
+    val is : Source = input match {
       case None      => Source.fromInputStream( this.getClass.getResourceAsStream("/widgets.properties") )
       case Some("-") => io.Source.stdin
-      case Some(_)   => Source.fromFile(config.get)
+      case Some(_)   => Source.fromFile(input.get)
     }
     generate(os, is)
   }

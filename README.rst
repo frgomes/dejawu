@@ -28,6 +28,8 @@ Rewrite due to migration to scalatags 0.3.8 is going on.
 
 * everything builds and compiles fine with SBT 0.13.5 and Scala 2.11.1
 
+* test cases in project dejawu-tools are failing.
+
 * http://localhost:9000/app renders as expected, presenting a few Dojo widgets.
 
 * Translator HTML -> ScalaJS (with Scalatags + Dejawu) is under early development.

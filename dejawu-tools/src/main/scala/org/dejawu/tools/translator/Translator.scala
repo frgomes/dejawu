@@ -1,11 +1,39 @@
 package org.dejawu.tools.translator
 
 
+case class CmdLine(input: String = null, output: String = null)
+
+
+class CLI(args : Array[String]) {
+  private val parser =
+    new scopt.OptionParser[CmdLine]("translator") {
+      head("""usage: translator [<input>] [<output>]
+           |synopsis:
+           |  Translate a HTML file to ScalaJS, employing Scalatags and Dejawu.
+           |  More info on ScalaJS:      https://github.com/scala-js/scala-js
+           |               Scalatags:    https://github.com/lihaoyi/scalatags
+           |               Dejawu:       https://github.com/frgomes/dejawu
+           |options:""".stripMargin)
+      arg[String]("<input>")
+        .optional()
+        .action { (o, c) => c.copy( input = o ) }
+        .text("""Input .html file or "-" (without quotes) for stdin""")
+      arg[String]("<output>")
+        .optional()
+        .action { (o, c) => c.copy( output = o ) }
+        .text("""Output .scala file or "-" (without quotes) for stdout""")
+    }
+
+  def parse : Option[CmdLine] = parser.parse(args, CmdLine())
+}
+
+
 object Translator {
   def main(args: Array[String]) {
-    val cli  = new TranslatorCLI(args)
+    val cmd  = new CLI(args).parse
     val tool = new Translator
-    tool.translate( cli.input.get, cli.output.get )
+    if (cmd.isDefined)
+      tool.translate( Some(cmd.get.input), Some(cmd.get.output) )
   }
 }
 
