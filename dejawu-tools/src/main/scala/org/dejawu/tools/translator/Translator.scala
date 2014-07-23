@@ -1,12 +1,41 @@
 package org.dejawu.tools.translator
 
 
-case class CmdLine(input: String = null, output: String = null)
+case class Cmd(input: String = null, output: String = null)
+
+
+object CLI {
+  import java.io.{InputStream,FileInputStream}
+  import java.io.{OutputStream,PrintStream}
+  import java.net.URL
+
+  def inputStream(input: Option[String]) : InputStream =
+    input match {
+      case Some("-") => System.in
+      case Some(_)   =>
+        if(input.get.indexOf(":") == -1)
+          new FileInputStream(input.get)
+        else
+          new URL(input.get).openStream
+      case _         => System.in
+    }
+
+  def outputStream(output: Option[String]) : OutputStream =
+    output match {
+      case Some("-") => System.out
+      case Some(_)   => new PrintStream(output.get)
+      case _         => System.out
+    }
+}
 
 
 class CLI(args : Array[String]) {
+  // FIXME: http://stackoverflow.com/questions/7163364/how-to-handle-in-file-paths
+  private val re   = "^~".r
+  private val home = System.getProperty("user.home")
+
   private val parser =
-    new scopt.OptionParser[CmdLine]("translator") {
+    new scopt.OptionParser[Cmd]("translator") {
       head("""usage: translator [<input>] [<output>]
            |synopsis:
            |  Translate a HTML file to ScalaJS, employing Scalatags and Dejawu.
@@ -16,15 +45,15 @@ class CLI(args : Array[String]) {
            |options:""".stripMargin)
       arg[String]("<input>")
         .optional()
-        .action { (o, c) => c.copy( input = o ) }
+        .action { (o, c) => c.copy( input = re.replaceFirstIn(o, home) ) }
         .text("""Input .html file or "-" (without quotes) for stdin""")
       arg[String]("<output>")
         .optional()
-        .action { (o, c) => c.copy( output = o ) }
+        .action { (o, c) => c.copy( output = re.replaceFirstIn(o, home) ) }
         .text("""Output .scala file or "-" (without quotes) for stdout""")
     }
 
-  def parse : Option[CmdLine] = parser.parse(args, CmdLine())
+  val parse : Option[Cmd] = parser.parse(args, Cmd())
 }
 
 
@@ -33,7 +62,9 @@ object Translator {
     val cmd  = new CLI(args).parse
     val tool = new Translator
     if (cmd.isDefined)
-      tool.translate( Some(cmd.get.input), Some(cmd.get.output) )
+      tool.translate(
+        CLI.inputStream(Some(cmd.get.input)),
+        CLI.outputStream(Some(cmd.get.output)) )
   }
 }
 
@@ -46,6 +77,8 @@ class Translator {
 
   def escape(s: String) = if(s.indexOf("-") == -1) s else s"`$s`"
 
+  def nospaces(s: String) : String = if(s.trim.length == 0) "" else s""""${s}""""
+
   def process(node: Node, level: Int) : StringBuilder = {
     val sb = new StringBuilder
     val attrs  : scala.xml.MetaData = node.attributes
@@ -57,25 +90,26 @@ class Translator {
     val tag : String =
       djtype match {
         case None => node.label
-        case _ : Option[Seq[Node]] => djtype.get.head.text
+        case _ : Option[Seq[Node]] => djtype.get.head.text.replace("/", ".")
       }
-    sb ++= "  " * level
-    sb ++= tag
-    sb ++= "("
-    attrs
-      .filter(attr => attr.key != "data-dojo-type")
-      .foldLeft(new StringBuilder)((sb, attr) => {
-        if(sb.length > 0) sb ++= ", "
-        sb ++= escape(attr.key)
-        sb ++= " := "
-        sb ++= attr.value.head.text })
-    sb ++= ")"
-    if(node.child.length > 0) {
-      sb ++= "(\n"
-      process(node.child, level+1)
-      sb ++= "\n"
+    if(tag=="#PCDATA") {
+      sb ++= nospaces(node.text)
+    } else {
+      if(level > 0) sb ++= "\n"
       sb ++= "  " * level
+      sb ++= tag
+      sb ++= "("
+      sb ++= attrs
+        .filter(attr => attr.key != "data-dojo-type")
+        .foldLeft(new StringBuilder)((sb2, attr) => {
+          if(sb2.length > 0) sb ++= ", "
+          sb2 ++= s"""${escape(attr.key)} := "${attr.value.head.text}"""" })
       sb ++= ")"
+      if(node.child.length > 0) {
+        sb ++= "("
+        sb ++= process(node.child, level+1)
+        sb ++= ")"
+      }
     }
     sb
   }
@@ -95,19 +129,4 @@ class Translator {
 
   def translate(is: InputStream, os: OutputStream)  : Unit =
     os.write( translate(is).toString.getBytes )
-
-  def translate(input: Option[String], output: Option[String]) : Unit = {
-    import java.io.{FileInputStream,PrintStream}
-    val is : InputStream = input match {
-      case Some("-") => System.in
-      case Some(_)   => new FileInputStream(input.get)
-      case _         => System.in
-    }
-    val os : PrintStream = output match {
-      case Some("-") => System.out
-      case Some(_)   => new PrintStream(output.get)
-      case _         => System.out
-    }
-    translate(is, os)
-  }
 }
