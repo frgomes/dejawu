@@ -12,6 +12,14 @@ class TranslatorSpec extends FeatureSpec with GivenWhenThen {
     scenario("Parsing a command line with simple file names") {
       val cmd = new CLI(Array("Example.html", "Example.scala")).parse
       assert( cmd.isDefined )
+      assert( cmd.get.mclass === null )
+      assert( cmd.get.input  === "Example.html"  )
+      assert( cmd.get.output === "Example.scala" )
+    }
+    scenario("Parsing a command line with simple file names and main class") {
+      val cmd = new CLI(Array("-m", "org.dejawu.demos.ThemePreviewer", "Example.html", "Example.scala")).parse
+      assert( cmd.isDefined )
+      assert( cmd.get.mclass === "org.dejawu.demos.ThemePreviewer" )
       assert( cmd.get.input  === "Example.html"  )
       assert( cmd.get.output === "Example.scala" )
     }
@@ -19,6 +27,7 @@ class TranslatorSpec extends FeatureSpec with GivenWhenThen {
       val cmd = new CLI(Array("~/demo.html", "~/tmp/demo.scala")).parse
       assert( cmd.isDefined )
       val home = System.getProperty("user.home")
+      assert( cmd.get.mclass === null )
       assert( cmd.get.input  === s"${home}/demo.html"  )
       assert( cmd.get.output === s"${home}/tmp/demo.scala" )
     }
@@ -72,16 +81,65 @@ class TranslatorSpec extends FeatureSpec with GivenWhenThen {
   feature("Ability to generate output") {
     scenario("Parsing a simple HTML") {
       snippet(
+        null, null,
         "<html><body>Hello</body></html>",
         """body()("Hello")""".stripMargin)
     }
+    scenario("Parsing a simple HTML with prologue") {
+      snippet(
+        null, "Name",
+        "<html><body>Hello</body></html>",
+        """import scala.scalajs.js
+          |import js.annotation.JSExport
+          |import js.Dynamic.{ global => g }
+          | 
+          |import scalatags.Text.all._
+          |import org.dejawu.DojoText.all._
+          | 
+          | 
+          |object Name extends js.JSApp {
+          | 
+          |  def main() = {
+          |    val container = g.document.getElementById("container")
+          |    container.innerHTML = render().toString()
+          |  }
+          | 
+          |  private def render() =
+          |body()("Hello")""".stripMargin)
+    }
     scenario("Parsing a simple HTML with attribute") {
       snippet(
+        null, null,
         """<html><body style="tundra">Hello</body></html>""",
         """body(style := "tundra")("Hello")""".stripMargin)
     }
+    scenario("Parsing a simple HTML with attribute with prologue") {
+      snippet(
+        "fully.qualified.class", "Name",
+        """<html><body style="tundra">Hello</body></html>""",
+        """package fully.qualified.class
+          |
+          |import scala.scalajs.js
+          |import js.annotation.JSExport
+          |import js.Dynamic.{ global => g }
+          | 
+          |import scalatags.Text.all._
+          |import org.dejawu.DojoText.all._
+          | 
+          | 
+          |object Name extends js.JSApp {
+          | 
+          |  def main() = {
+          |    val container = g.document.getElementById("container")
+          |    container.innerHTML = render().toString()
+          |  }
+          | 
+          |  private def render() =
+          |body(style := "tundra")("Hello")""".stripMargin)
+    }
     scenario("Parsing a very simple HTML with one Dojo widget") {
       snippet(
+        null, null,
         """<html>
             <body>
               <div>
@@ -105,22 +163,24 @@ class TranslatorSpec extends FeatureSpec with GivenWhenThen {
           |      option(value := "CA")("California"))))""".stripMargin)
     }
     scenario("Translate Dojo Demo 'Theme Previewer'") {
+      val fqcn  = "org.dejawu.demos.ThemePreviewer"
       val html  = "https://raw.githubusercontent.com/dojo/demos/master/themePreviewer/demo.html"
-      val scala = "/tmp/demo.scala"
-      val cmd = new CLI(Array(html, scala)).parse
+      val scala = "dejawu-scalajs/src/main/scala/org/dejawu/demos/ThemePreviewer.scala"
+      val cmd = new CLI(Array("-m", fqcn, html, scala)).parse
       assert(cmd.isDefined)
       val tool = new Translator
+      val pkgname = Option(cmd.get.pkgname)
+      val mclass  = Option(cmd.get.mclass)
       val is = CLI.inputStream(Some(cmd.get.input))
       val os = CLI.outputStream(Some(cmd.get.output))
-      tool.translate( is, os )
+      tool.translate( pkgname, mclass, is, os )
     }
   }
 
-  private def snippet(html: String, scala: String) : Unit = {
-    val is = new ByteArrayInputStream(html.getBytes("UTF-8"))
-    val os = new ByteArrayOutputStream
+  private def snippet(pkgname: String, mclass: String, html: String, scala: String) : Unit = {
     val tool = new Translator
-    tool.translate(is, os)
+    val os = new ByteArrayOutputStream
+    tool.translate(Option(pkgname), Option(mclass), new ByteArrayInputStream(html.getBytes("UTF-8")), os)
     assert(new String(os.toByteArray, "UTF-8") === scala)
   }
 
