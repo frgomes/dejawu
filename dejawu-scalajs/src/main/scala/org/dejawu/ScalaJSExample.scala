@@ -17,13 +17,13 @@ object ScalaJSExample extends js.JSApp {
 
   private def render() =
     div(
-      dijit.form.select(name := "select1")(
+      dijit.form.Select(name := "select1")(
         option(value := "TN")("Tennessee"),
         option(value := "VA")("Virginia"),
         option(value := "WA")("Washington"),
         option(value := "FL")("Florida"),
         option(value := "CA")("California")),
-      dojo.store.memory(
+      dojo.store.Memory(
         `data-dojo-id`    := "stateStore",
         `data-dojo-props` := """data: [
                                |{ id: 'EG', name:'Egypt'    },
@@ -38,7 +38,7 @@ object ScalaJSExample extends js.JSApp {
                                |{ id: 'ES', name:'Spain'    },
                                |{ id: 'IT', name:'Italy'    }
                                |]""".stripMargin),
-      dijit.form.combobox(
+      dijit.form.ComboBox(
         name := "combobox1", value := "Egypt",
         `data-dojo-props` := "store:stateStore, searchAttr:'name'")
     )

@@ -12,24 +12,27 @@ class TranslatorSpec extends FeatureSpec with GivenWhenThen {
     scenario("Parsing a command line with simple file names") {
       val cmd = new CLI(Array("Example.html", "Example.scala")).parse
       assert( cmd.isDefined )
-      assert( cmd.get.mclass === null )
-      assert( cmd.get.input  === "Example.html"  )
-      assert( cmd.get.output === "Example.scala" )
+      assert( cmd.get.pkgname === null )
+      assert( cmd.get.clsname === null )
+      assert( cmd.get.input   === "Example.html"  )
+      assert( cmd.get.output  === "Example.scala" )
     }
     scenario("Parsing a command line with simple file names and main class") {
       val cmd = new CLI(Array("-m", "org.dejawu.demos.ThemePreviewer", "Example.html", "Example.scala")).parse
       assert( cmd.isDefined )
-      assert( cmd.get.mclass === "org.dejawu.demos.ThemePreviewer" )
-      assert( cmd.get.input  === "Example.html"  )
-      assert( cmd.get.output === "Example.scala" )
+      assert( cmd.get.pkgname === "org.dejawu.demos" )
+      assert( cmd.get.clsname === "ThemePreviewer" )
+      assert( cmd.get.input   === "Example.html"  )
+      assert( cmd.get.output  === "Example.scala" )
     }
     scenario("Parsing a command line with file names relative to the home directory") {
       val cmd = new CLI(Array("~/demo.html", "~/tmp/demo.scala")).parse
       assert( cmd.isDefined )
       val home = System.getProperty("user.home")
-      assert( cmd.get.mclass === null )
-      assert( cmd.get.input  === s"${home}/demo.html"  )
-      assert( cmd.get.output === s"${home}/tmp/demo.scala" )
+      assert( cmd.get.pkgname === null )
+      assert( cmd.get.clsname === null )
+      assert( cmd.get.input   === s"${home}/demo.html"  )
+      assert( cmd.get.output  === s"${home}/tmp/demo.scala" )
     }
 
     //FIXME: allow "-" and "--" as arguments in http://github.com/scopt/scopt
@@ -105,7 +108,9 @@ class TranslatorSpec extends FeatureSpec with GivenWhenThen {
           |  }
           | 
           |  private def render() =
-          |body()("Hello")""".stripMargin)
+          |body()("Hello")
+          |
+          |}""".stripMargin)
     }
     scenario("Parsing a simple HTML with attribute") {
       snippet(
@@ -135,7 +140,9 @@ class TranslatorSpec extends FeatureSpec with GivenWhenThen {
           |  }
           | 
           |  private def render() =
-          |body(style := "tundra")("Hello")""".stripMargin)
+          |body(style := "tundra")("Hello")
+          |
+          |}""".stripMargin)
     }
     scenario("Parsing a very simple HTML with one Dojo widget") {
       snippet(
@@ -170,17 +177,17 @@ class TranslatorSpec extends FeatureSpec with GivenWhenThen {
       assert(cmd.isDefined)
       val tool = new Translator
       val pkgname = Option(cmd.get.pkgname)
-      val mclass  = Option(cmd.get.mclass)
+      val clsname  = Option(cmd.get.clsname)
       val is = CLI.inputStream(Some(cmd.get.input))
       val os = CLI.outputStream(Some(cmd.get.output))
-      tool.translate( pkgname, mclass, is, os )
+      tool.translate( pkgname, clsname, is, os )
     }
   }
 
-  private def snippet(pkgname: String, mclass: String, html: String, scala: String) : Unit = {
+  private def snippet(pkgname: String, clsname: String, html: String, scala: String) : Unit = {
     val tool = new Translator
     val os = new ByteArrayOutputStream
-    tool.translate(Option(pkgname), Option(mclass), new ByteArrayInputStream(html.getBytes("UTF-8")), os)
+    tool.translate(Option(pkgname), Option(clsname), new ByteArrayInputStream(html.getBytes("UTF-8")), os)
     assert(new String(os.toByteArray, "UTF-8") === scala)
   }
 

@@ -1,7 +1,7 @@
 package org.dejawu.tools.translator
 
 
-case class Cmd(pkgname: String = null, mclass: String = null, input: String = null, output: String = null)
+case class Cmd(pkgname: String = null, clsname: String = null, input: String = null, output: String = null)
 
 
 object CLI {
@@ -34,13 +34,8 @@ class CLI(args : Array[String]) {
   private val re   = "^~".r
   private val home = System.getProperty("user.home")
 
-  private var pkgname : String = null
-  private var mclass  : String = null
-  private var input   : String = null
-  private var output  : String = null
-
-  private val parser = {
-    new scopt.OptionParser[Unit]("translator") {
+  private val parser = 
+    new scopt.OptionParser[Cmd]("translator") {
       head("""usage: translator [<input>] [<output>]
            |synopsis:
            |  Translate a HTML file to ScalaJS, employing Scalatags and Dejawu.
@@ -48,52 +43,35 @@ class CLI(args : Array[String]) {
            |               Scalatags:    https://github.com/lihaoyi/scalatags
            |               Dejawu:       https://github.com/frgomes/dejawu
            |options:""".stripMargin)
-      opt[String]("").hidden()
-        .foreach { _ => pkgname = null }
+      //XXX opt[String]("").hidden()
+      //  .action { (o, c) => c.copy( pkgname = null ) }
       opt[String]('m', "main-class").valueName("[main-class]")
         .optional
-        .foreach { o => mclass = o }
+        .action { (o, c) => c.copy( clsname = o ) }
         .text("""Fully qualified class name""")
       arg[String]("<input>")
         .optional()
-        .foreach { o => input = re.replaceFirstIn(o, home) }
+        .action { (o, c) => c.copy( input = re.replaceFirstIn(o, home) ) }
         .text("""Input .html file or "-" (without quotes) for stdin""")
       arg[String]("<output>")
         .optional()
-        .foreach { o => output = re.replaceFirstIn(o, home) }
+        .action { (o, c) => c.copy( output = re.replaceFirstIn(o, home) ) }
         .text("""Output .scala file or "-" (without quotes) for stdout""")
-      checkConfig { c => {
-        if(mclass != null && mclass.trim.length > 0) {
-          val parts = mclass.trim.split('.')
-          pkgname = if(parts.length < 2) "" else parts.reverse.tail.reverse.mkString(".")
-          mclass  = parts.length match {
-            case 0 => "Noname"
-            case 1 => mclass.trim
-            case _ => parts.last
-          }
-        } else {
-          mclass = "NoName"
-        }
-        success }}
     }
-  }
 
-  //TODO: consider class name taken from output file name, if any
-  private def split(mclass: String) : (String, String) =
-    if(mclass != null && mclass.trim.length > 0) {
-      val parts = mclass.trim.split('.')
-      val pkgname : String = if(parts.length < 2) "" else parts.reverse.tail.reverse.mkString(".")
-      val clsname : String = parts.length match {
-        case 0 => "Noname"
-        case 1 => mclass.trim
-        case _ => parts.last
-      }
-      ( pkgname, clsname )
-    } else {
-      ( null, null )
-    }
- 
-  val parse : Option[Cmd] = if (!parser.parse(args)) None else Option(Cmd(pkgname, mclass, input, output))
+  private def validate(c : Option[Cmd]) : Option[Cmd] =
+    if(!c.isDefined) c else
+      if(c.get.clsname != null && c.get.clsname.trim.length > 0) {
+        val parts = c.get.clsname.trim.split('.')
+        val pkgname : String = if(parts.length < 2) "" else parts.reverse.tail.reverse.mkString(".")
+        val clsname : String = parts.length match {
+          case 0 => "Noname"
+          case 1 => c.get.clsname.trim
+          case _ => parts.last }
+        Option(Cmd(pkgname, clsname, c.get.input, c.get.output)) }
+      else { Option(Cmd(null, null, c.get.input, c.get.output)) }
+
+  val parse : Option[Cmd] = validate(parser.parse(args, Cmd()))
 
 }
 
@@ -105,7 +83,7 @@ object Translator {
     if (cmd.isDefined)
       tool.translate(
         Option(cmd.get.pkgname),
-        Option(cmd.get.mclass),
+        Option(cmd.get.clsname),
         CLI.inputStream(Some(cmd.get.input)),
         CLI.outputStream(Some(cmd.get.output)) )
   }
@@ -118,7 +96,19 @@ class Translator {
   import scala.xml.factory.XMLLoader
   import org.ccil.cowan.tagsoup.jaxp.SAXFactoryImpl
 
-  def escape(s: String) = if(s.indexOf("-") == -1) s else s"`$s`"
+  private val keywords : Set[String] = Set(
+    "for", "false", "package", "lazy", "this", "try", "protected", "private", "return",
+    "if", "do", "override", "else", "macro", "abstract", "super", "yield", "finally", "null",
+    "object", "match", "import", "forSome", "implicit", "final", "then", "trait", "new",
+    "while", "with", "true", "class", "extends", "def", "case", "type", "catch", "throw",
+    "sealed", "var", "val")
+  //FIXME: use the code below instead when everything flips to Scala 2.11
+  //  new scala.tools.nsc.Global(new scala.tools.nsc.Settings)
+  //    .nme
+  //    .keywords
+  //    .map(t => t.toString)
+
+  def escape(s: String) = if(s.indexOf("-") > -1 || !keywords.contains(s.trim)) s else s"`$s`"
 
   def tripleQuotes : StringBuilder =
     new StringBuilder + ('"') + ('"') + ('"')
@@ -185,48 +175,48 @@ class Translator {
     nodes.foldLeft(new StringBuilder)(
       (sb, node) => sb ++= process(node, level).toString)
 
-  def prologue(pkgname: Option[String], mclass : Option[String]) : StringBuilder =
-    if(mclass.isDefined) {
+  def prologue(pkgname: Option[String], clsname : Option[String]) : StringBuilder =
+    if(clsname.isDefined) {
       val sb = new StringBuilder
-      if (pkgname.isDefined) sb ++= """package ${pkgname}\n\n"""
-      sb ++= """import scala.scalajs.js
-               |import js.annotation.JSExport
-               |import js.Dynamic.{ global => g }
-               | 
-               |import scalatags.Text.all._
-               |import org.dejawu.DojoText.all._
-               | 
-               | 
-               |object ${clsname} extends js.JSApp {
-               | 
-               |  def main() = {
-               |    val container = g.document.getElementById("container")
-               |    container.innerHTML = render().toString()
-               |  }
-               | 
-               |  private def render() =
-               |""".stripMargin
+      if (pkgname.isDefined) sb ++= s"""package ${pkgname.get}""" + "\n\n"
+      sb ++= s"""import scala.scalajs.js
+                |import js.annotation.JSExport
+                |import js.Dynamic.{ global => g }
+                | 
+                |import scalatags.Text.all._
+                |import org.dejawu.DojoText.all._
+                | 
+                | 
+                |object ${clsname.get} extends js.JSApp {
+                | 
+                |  def main() = {
+                |    val container = g.document.getElementById("container")
+                |    container.innerHTML = render().toString()
+                |  }
+                | 
+                |  private def render() =
+                |""".stripMargin
   } else {
     new StringBuilder
   }
 
-  def epilogue(pkgname : Option[String], mclass : Option[String]) : StringBuilder =
-    if(pkgname.isDefined && mclass.isDefined)
+  def epilogue(pkgname : Option[String], clsname : Option[String]) : StringBuilder =
+    if(clsname.isDefined && clsname.isDefined)
       new StringBuilder("\n\n}")
     else
       new StringBuilder
 
-  def translate(pkgname: Option[String], mclass: Option[String], is: InputStream) : StringBuilder = {
+  def translate(pkgname: Option[String], clsname: Option[String], is: InputStream) : StringBuilder = {
     val factory = new SAXFactoryImpl
     factory.setNamespaceAware(false)
     val loader : XMLLoader[Elem] = XML.withSAXParser(factory.newSAXParser())
     val root : scala.xml.Elem = loader.load(is)
     val body : NodeSeq = root \\ "body"
-    prologue(pkgname, mclass)
+    prologue(pkgname, clsname)
       .append(process(body, 0))
-      .append(epilogue(pkgname, mclass))
+      .append(epilogue(pkgname, clsname))
   }
 
-  def translate(pkgname: Option[String], mclass: Option[String], is: InputStream, os: OutputStream)  : Unit =
-    os.write( translate(pkgname, mclass, is).toString.getBytes )
+  def translate(pkgname: Option[String], clsname: Option[String], is: InputStream, os: OutputStream)  : Unit =
+    os.write( translate(pkgname, clsname, is).toString.getBytes )
 }

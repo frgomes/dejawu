@@ -145,7 +145,6 @@ object Versions {
   val scala = "2.11.1"
   val scalajsDom = "0.6"
   val scalatags = "0.3.8"
-  //XXX val scallop = "0.9.5"
   val scopt = "3.2.0"
   val tagsoup = "1.2.1"
 }

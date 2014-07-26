@@ -24,15 +24,14 @@ Status for the impatient
 
 Rewrite due to migration to scalatags 0.3.8 is going on.
 
-* code generator is temporarily disabled
-
 * everything builds and compiles fine with SBT 0.13.5 and Scala 2.11.1
-
-* test cases in project dejawu-tools are failing.
 
 * http://localhost:9000/app renders as expected, presenting a few Dojo widgets.
 
-* Translator HTML -> ScalaJS (with Scalatags + Dejawu) is under early development.
+* translator HTML -> ScalaJS (with Scalatags + Dejawu) mostly works, but still requires review when complex HTML pages are converted.
+
+* code generator is temporarily disabled
+
 
   
 What *dejawu* is about?
