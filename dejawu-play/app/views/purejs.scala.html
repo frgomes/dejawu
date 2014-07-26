@@ -1,11 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>dejawu</title>
-    <script>dojoConfig = {parseOnLoad: true}</script>
-    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.9.3/dojo/dojo.js"></script>
-    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.9.3/dijit/themes/claro/claro.css">
+  <meta charset="utf-8">
+  <title>dejawu</title>
+  <script>dojoConfig = {parseOnLoad: true}</script>
+  <script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dojo/dojo.js"></script>
+  <link rel="stylesheet" media="screen" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dijit/themes/claro/claro.css">
+  <script>
+  var javascripts = '@routes.Assets.at("/javascripts")';
+  var dojo_play = javascripts + '/dojo-release-1.10.0';
+  typeof(dojo) === "undefined"
+    && document.write(unescape(
+      "%3Clink
+          rel=&quot;stylesheet&quot; media=&quot;screen&quot;
+          href=&quot;") + dojo_play + "/dijit/themes/claro/claro.css" + unescape("&quot;/%3E"))
+    && document.write(unescape(
+      "%3Cscript
+          data-dojo-config=&quot;async: true, dojoBlankHtmlUrl: '/blank.html',
+            packages: [ {
+                name: 'custom',
+                location: location.pathname.replace(/\/[^/]+$/, '') + '/javascripts/dojo-release-1.10.0'
+            } ]&quot;
+          src=&quot;") + dojo_play + "/dojo/dojo.js" + unescape("&quot;%3E%3C/script%3E"));
+  </script>
+    
 </head>
 <body class="claro">
 
@@ -195,7 +213,7 @@ Work in progress
     </div>
 </div>
 
-<script type="text/javascript">
+<!-- script type="text/javascript">
     require(["dojo/parser"]);
     require(["dijit/layout/ContentPane"]);
     require(["dijit/layout/BorderContainer"]);
@@ -214,7 +232,7 @@ Work in progress
 	//   "gridx/modules/ColumnResizer",
 	//   "gridx/modules/extendedSelect/Row",
 	//   "gridx/modules/SingleSort"]);
-</script>
+</script -->
 
 </body>
 </html>

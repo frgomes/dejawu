@@ -3,33 +3,29 @@
 <head>
   <meta charset="utf-8">
   <title>dejawu</title>
-  <script
-     data-dojo-config="async: 1, dojoBlankHtmlUrl: '/blank.html',
-       packages: [ {
-            name: 'custom',
-            location: location.pathname.replace(/\/[^/]+$/, '') + '/javascripts'
-        } ]"
-    src="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dojo/dojo.js"></script>
-  <script>var dojo_play = '@routes.Assets.at("/javascripts/dojo-1.10.0.js")';</script>
-  <script typeof(dojo) === "undefined" && document.write(unescape(
-  "%3Cscript
-     data-dojo-config=&quot;async: 1, dojoBlankHtmlUrl: '/blank.html',
-       packages: [ {
-            name: 'custom',
-            location: location.pathname.replace(/\/[^/]+$/, '') + '/javascripts'
-        } ]&quot;
-     src=&quot;") +
-   dojo_play +
-   unescape("&quot;%3E%3C/script%3E")))</script>
+  <script>dojoConfig = {parseOnLoad: true}</script>
+  <script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dojo/dojo.js"></script>
+  <link rel="stylesheet" media="screen" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dijit/themes/claro/claro.css">
+  <script>
+  var javascripts = '@routes.Assets.at("/javascripts")';
+  var dojo_play = javascripts + '/dojo-release-1.10.0';
+  typeof(dojo) === "undefined"
+    && document.write(unescape(
+      "%3Clink
+          rel=&quot;stylesheet&quot; media=&quot;screen&quot;
+          href=&quot;") + dojo_play + "/dijit/themes/claro/claro.css" + unescape("&quot;%3E"))
+    && document.write(unescape(
+      "%3Cscript
+          data-dojo-config=&quot;async: true, dojoBlankHtmlUrl: '/blank.html',
+            packages: [ {
+                name: 'custom',
+                location: location.pathname.replace(/\/[^/]+$/, '') + '/javascripts/dojo-release-1.10.0'
+            } ]&quot;
+          src=&quot;")  + dojo_play + "/dojo/dojo.js" + unescape("&quot;%3E%3C/script%3E"));
+  </script>
 </head>
 <body class="claro">
-<!--
-    <div id="loading">Loading<BR/><img src="@routes.Assets.at("ajax-loader.gif")"/></div>
-
-    < ! - - for production (play dist), use the optimized version instead - - >
-    < ! - - <script type="text/javascript" src="@routes.Assets.at("js/dejawu-scalajs-opt.js")"></script> - - >
--->
-
+    <!-- div id="loading">Loading<BR/><img src="@routes.Assets.at("ajax-loader.gif")"/></div -->
     <div id="container"></div>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/dejawu-scalajs-fastopt.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("javascripts/dejawu-scalajs-launcher.js")"></script>
