@@ -79,7 +79,24 @@ class TranslatorSpec extends FeatureSpec with GivenWhenThen {
     // }
   }
 
-  import java.io._
+  feature("Ability to escape attributes") {
+    scenario("Attributes do not need to be escaped") {
+      val tool = new Translator
+      assert( tool.escape("name") === "name"   )
+      assert( tool.escape("__a_") === "__a_" )
+      assert( tool.escape("a__b") === "a__b" )
+      assert( tool.escape("_var") === "_var" )
+    }
+    scenario("Attributes need to be escaped") {
+      val tool = new Translator
+      assert( tool.escape("type")  === "`type`"  )
+      assert( tool.escape("for")   === "`for`"   )
+      assert( tool.escape("class") === "`class`" )
+      assert( tool.escape("var")   === "`var`"   )
+      assert( tool.escape("a-b")   === "`a-b`"   )
+      assert( tool.escape("data-dojo-type")   === "`data-dojo-type`"   )
+    }
+  }
 
   feature("Ability to generate output") {
     scenario("Parsing a simple HTML") {
@@ -163,10 +180,10 @@ class TranslatorSpec extends FeatureSpec with GivenWhenThen {
         """body()(
           |  div()(
           |    dijit.form.Select(name := "select1")(
-          |      option(value := "TN")("Tennessee")
-          |      option(value := "VA")("Virginia")
-          |      option(value := "WA")("Washington")
-          |      option(value := "FL")("Florida")
+          |      option(value := "TN")("Tennessee"),
+          |      option(value := "VA")("Virginia"),
+          |      option(value := "WA")("Washington"),
+          |      option(value := "FL")("Florida"),
           |      option(value := "CA")("California"))))""".stripMargin)
     }
     scenario("Translate Dojo Demo 'Theme Previewer'") {
@@ -185,6 +202,7 @@ class TranslatorSpec extends FeatureSpec with GivenWhenThen {
   }
 
   private def snippet(pkgname: String, clsname: String, html: String, scala: String) : Unit = {
+    import java.io._
     val tool = new Translator
     val os = new ByteArrayOutputStream
     tool.translate(Option(pkgname), Option(clsname), new ByteArrayInputStream(html.getBytes("UTF-8")), os)

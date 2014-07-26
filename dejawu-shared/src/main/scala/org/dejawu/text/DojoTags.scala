@@ -11,7 +11,7 @@ trait DojoTags extends generic.DojoTags[Builder, String, String]
   object dijit {
     val Calendar         = "div" .tag(List(List(`data-dojo-type` := "dijit/Calendar"        )))
     val CalendarLite     = "div" .tag(List(List(`data-dojo-type` := "dijit/CalendarLite"    )))
-    val Colorpalette     = "div" .tag(List(List(`data-dojo-type` := "dijit/ColorPalette"    )))
+    val ColorPalette     = "div" .tag(List(List(`data-dojo-type` := "dijit/ColorPalette"    )))
     val Declaration      = "div" .tag(List(List(`data-dojo-type` := "dijit/Declaration"     )))
     val Dialog           = "div" .tag(List(List(`data-dojo-type` := "dijit/Dialog"          )))
     val Editor           = "div" .tag(List(List(`data-dojo-type` := "dijit/Editor"          )))
@@ -20,14 +20,20 @@ trait DojoTags extends generic.DojoTags[Builder, String, String]
     val Menu             = "div" .tag(List(List(`data-dojo-type` := "dijit/Menu"            )))
     val MenuItem         = "div" .tag(List(List(`data-dojo-type` := "dijit/MenuItem"        )))
     val MenuSeparator    = "div" .tag(List(List(`data-dojo-type` := "dijit/MenuSeparator"   )))
+    val MenuBar          = "div" .tag(List(List(`data-dojo-type` := "dijit/MenuBar"         )))
+    val PopupMenuItem    = "div" .tag(List(List(`data-dojo-type` := "dijit/PopupMenuItem"   )))
+    val PopupMenuBarItem = "div" .tag(List(List(`data-dojo-type` := "dijit/PopupMenuBarItem")))
     val Progressbar      = "div" .tag(List(List(`data-dojo-type` := "dijit/ProgressBar"     )))
+    val RadioMenuItem    = "div" .tag(List(List(`data-dojo-type` := "dijit/RadioMenuItem"   )))
     val Titlepane        = "div" .tag(List(List(`data-dojo-type` := "dijit/TitlePane"       )))
     val Toolbar          = "div" .tag(List(List(`data-dojo-type` := "dijit/Toolbar"         )))
     val Toolbarseparator = "span".tag(List(List(`data-dojo-type` := "dijit/ToolbarSeparator")))
     val Tooltip          = "div" .tag(List(List(`data-dojo-type` := "dijit/Tooltip"         )))
     val TooltipDialog    = "div" .tag(List(List(`data-dojo-type` := "dijit/TooltipDialog"   )))
     object layout {
-      val BorderContainer   = "div"     .tag(List(List(`data-dojo-type` := "dijit/layout/BorderContainer")))
+      var AccordionContainer = "div"     .tag(List(List(`data-dojo-type` := "dijit/layout/AccordionContainer")))
+      val BorderContainer    = "div"     .tag(List(List(`data-dojo-type` := "dijit/layout/BorderContainer"   )))
+      val ContentPane        = "div"     .tag(List(List(`data-dojo-type` := "dijit/layout/ContentPane"       )))
     }
     object form {
       val Button            = "button"  .tag(List(List(`data-dojo-type` := "dijit/form/Button"           )))

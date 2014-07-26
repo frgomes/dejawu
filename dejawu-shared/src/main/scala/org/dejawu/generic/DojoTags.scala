@@ -17,14 +17,20 @@ trait DojoTags[Builder, Output <: FragT, FragT] extends Util[Builder, Output, Fr
     val Menu             : TypedTag[Builder, Output, FragT]
     val MenuItem         : TypedTag[Builder, Output, FragT]
     val MenuSparator     : TypedTag[Builder, Output, FragT]
+    val MenuBar          : TypedTag[Builder, Output, FragT]
+    val PopupMenuItem    : TypedTag[Builder, Output, FragT]
+    val PopupMenuBarItem : TypedTag[Builder, Output, FragT]
     val ProgressBar      : TypedTag[Builder, Output, FragT]
+    val RadioMenuItem    : TypedTag[Builder, Output, FragT]
     val TitlePane        : TypedTag[Builder, Output, FragT]
     val Toolbar          : TypedTag[Builder, Output, FragT]
     val ToolbarSeparator : TypedTag[Builder, Output, FragT]
     val Tooltip          : TypedTag[Builder, Output, FragT]
     val TooltipDialog    : TypedTag[Builder, Output, FragT]
     trait layout {
-      val Bordercontainer : TypedTag[Builder, Output, FragT]
+      val AccordionContainer : TypedTag[Builder, Output, FragT]
+      val BorderContainer    : TypedTag[Builder, Output, FragT]
+      val ContentPane        : TypedTag[Builder, Output, FragT]
     }
     trait form {
       val Button            : TypedTag[Builder, Output, FragT]

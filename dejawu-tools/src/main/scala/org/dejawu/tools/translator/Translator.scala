@@ -43,8 +43,6 @@ class CLI(args : Array[String]) {
            |               Scalatags:    https://github.com/lihaoyi/scalatags
            |               Dejawu:       https://github.com/frgomes/dejawu
            |options:""".stripMargin)
-      //XXX opt[String]("").hidden()
-      //  .action { (o, c) => c.copy( pkgname = null ) }
       opt[String]('m', "main-class").valueName("[main-class]")
         .optional
         .action { (o, c) => c.copy( clsname = o ) }
@@ -108,7 +106,7 @@ class Translator {
   //    .keywords
   //    .map(t => t.toString)
 
-  def escape(s: String) = if(s.indexOf("-") > -1 || !keywords.contains(s.trim)) s else s"`$s`"
+  def escape(s: String) = if(s.indexOf("-") > -1 || keywords.contains(s.trim)) s"`$s`" else s
 
   def tripleQuotes : StringBuilder =
     new StringBuilder + ('"') + ('"') + ('"')
@@ -172,8 +170,12 @@ class Translator {
   }
 
   def process(nodes : NodeSeq, level : Int) : StringBuilder =
-    nodes.foldLeft(new StringBuilder)(
-      (sb, node) => sb ++= process(node, level).toString)
+    nodes
+      .map(node => process(node, level))
+      .filter(sbNode => sbNode.length > 0)
+      .foldLeft(new StringBuilder)((sb, sbNode) => {
+        if(sb.length > 0) sb ++= ","
+        sb ++= sbNode })
 
   def prologue(pkgname: Option[String], clsname : Option[String]) : StringBuilder =
     if(clsname.isDefined) {
