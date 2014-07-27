@@ -4,31 +4,47 @@
 Quick guide for the impatient
 =============================
 
+For the time being, you will need to install hammered version of Scalatags:
+
 ::
 
-    $ sbt update clean run
-    $ firefox http://localhost:9000/purejs # for pure Javascript
-    $ firefox http://localhost:9000/app    # for Scala / ScalaJS / scalatags / dejawu
+   $ cd ~/workspace
+   $ git clone http://github.com/frgomes/scalatags
+   $ cd scalatags
+   $ sbt clean update compile publish-local
 
+
+Then you can try Dejawu   
+
+::
+
+    $ cd ~/workspace
+    $ git clone http://github.com/frgomes/dejawu   
+    $ sbt clean update compile run
+    $ firefox http://localhost:9000/purejs # this is HTML code
+    $ firefox http://localhost:9000/app    # this is Scala with ScalaJS+scalatags+dejawu
+
+
+Note: internet connection is required for running the examples.
+This requirement will be lifted in future in due course.
 
 * The first page is written in pure Javascript, employing Dojo Toolkit behind the
   scenes. This page is doomed to dissapear in future.
 
 * The second page is written entirely in Scala and it is intended to become a
   replacement of the page written in Javascript, providing the same look and feel
-  of the first page. It also employs Dojo Toolkit behind the scenes.
+  of the first page. It employs Dojo Toolkit behind the scenes.
 
 
+  
 Status for the impatient
 ========================
 
-Rewrite due to migration to scalatags 0.3.8 is going on.
+Working on the stabilization of the short term goals:
 
-* everything builds and compiles fine with SBT 0.13.5 and Scala 2.11.1
-
-* http://localhost:9000/app renders as expected, presenting a few Dojo widgets.
-
-* translator HTML -> ScalaJS (with Scalatags + Dejawu) mostly works, but still requires review when complex HTML pages are converted.
+* http://localhost:9000/app renders reasonably well, despite some issues still under investigation.
+  
+* translator HTML -> ScalaJS (with Scalatags + Dejawu) mostly works, but still requires more test cases and code review when complex HTML pages are converted.
 
 * code generator is temporarily disabled
 
@@ -75,25 +91,26 @@ Done
 
 1. Code based on scalatags
 2. Basic skeleton which explores the organization of the code
-3. Just a few graphical and non-graphical components at the moment.
+3. A fairly reasonable set of graphical and non-graphical components at the moment.
+4. Translator HTML to Scala
 
+   
 Next steps
 ----------
 
-1. Employ code generation as much as possible as a first step.
-   The code generator works, but it needs to be rewritten since scalatags 0.3.8
-   introduced new ways of defining widgets.
-
-
+1. More test cases for the translator. This may contribute to item 2 below.
+2. Stabilize proof of concept implemented in class ScalaJSExample.scala
+3. Employ code generation as much as possible as a first step.
+   
 Medium term goals
 -----------------
    
-11. Provide more flexible data stores, with coherent data structures and type checking
-12. Provide reactive data stores
-13. Add a grid widget
+11. Add a grid widget
+12. Provide more flexible data stores, with coherent data structures and type checking
+13. Provide reactive data stores
 
 Long term goals
 ---------------
 
 101. Create a single-page demo similar to http://demos.dojotoolkit.org/demos/themePreviewer/demo.html
-102. Create a demo similar to http://demos.dojotoolkit.org/demos/
+102. Create some more demos inspiered by http://demos.dojotoolkit.org/demos/

@@ -186,6 +186,21 @@ class TranslatorSpec extends FeatureSpec with GivenWhenThen {
           |      option(value := "FL")("Florida"),
           |      option(value := "CA")("California"))))""".stripMargin)
     }
+
+    scenario("Translate my humble Dojo experiment from purejs.scala.html") {
+      val fqcn  = "org.dejawu.demos.ScalaJSExample"
+      val html  = "/home/rgomes/workspace/dejawu/dejawu-play/app/views/purejs.scala.html"
+      val scala = "/tmp/ScalaJSExample.scala"
+      val cmd = new CLI(Array("-m", fqcn, html, scala)).parse
+      assert(cmd.isDefined)
+      val tool = new Translator
+      val pkgname  = Option(cmd.get.pkgname)
+      val clsname  = Option(cmd.get.clsname)
+      val is = CLI.inputStream(Some(cmd.get.input))
+      val os = CLI.outputStream(Some(cmd.get.output))
+      tool.translate( pkgname, clsname, is, os )
+    }
+
     scenario("Translate Dojo Demo 'Theme Previewer'") {
       val fqcn  = "org.dejawu.demos.ThemePreviewer"
       val html  = "https://raw.githubusercontent.com/dojo/demos/master/themePreviewer/demo.html"
@@ -193,7 +208,7 @@ class TranslatorSpec extends FeatureSpec with GivenWhenThen {
       val cmd = new CLI(Array("-m", fqcn, html, scala)).parse
       assert(cmd.isDefined)
       val tool = new Translator
-      val pkgname = Option(cmd.get.pkgname)
+      val pkgname  = Option(cmd.get.pkgname)
       val clsname  = Option(cmd.get.clsname)
       val is = CLI.inputStream(Some(cmd.get.input))
       val os = CLI.outputStream(Some(cmd.get.output))
