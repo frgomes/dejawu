@@ -4,7 +4,7 @@
 Quick guide for the impatient
 =============================
 
-For the time being, you will need to install hammered version of Scalatags:
+For the time being, you will need to install a hammered version of Scalatags:
 
 ::
 
