@@ -14,13 +14,19 @@ For the time being, you will need to install a hammered version of Scalatags:
    $ sbt clean update compile publish-local
 
 
-Then you can try Dejawu   
+Then you can build Dejawu and start the web server:
 
 ::
 
     $ cd ~/workspace
     $ git clone http://github.com/frgomes/dejawu   
     $ sbt clean update compile run
+
+
+Finally, visit these pages:
+
+::
+
     $ firefox http://localhost:9000/purejs # this is HTML code
     $ firefox http://localhost:9000/app    # this is Scala with ScalaJS+scalatags+dejawu
 
@@ -28,7 +34,7 @@ Then you can try Dejawu
 Note: internet connection is required for running the examples.
 This requirement will be lifted in future in due course.
 
-* The first page is written in pure Javascript, employing Dojo Toolkit behind the
+* The first page is written in HTML/Javascript, employing Dojo Toolkit behind the
   scenes. This page is doomed to dissapear in future.
 
 * The second page is written entirely in Scala and it is intended to become a
