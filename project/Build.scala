@@ -19,6 +19,16 @@ object ApplicationBuild extends Build with UniversalKeys {
   val webappSrcDir  = appName + "-play"
 
    //
+  // default settings
+  ///////////////////
+
+  override lazy val settings = super.settings :+ {
+    crossScalaVersions := Seq(
+      "2.10.2", "2.10.3", "2.10.4" // FIXME: , "2.11.0", "2.11.1", "2.11.2"
+    )}
+
+
+   //
   // projects
   ///////////
 
@@ -51,7 +61,6 @@ object ApplicationBuild extends Build with UniversalKeys {
     Seq(
       name := webappSrcDir,
       version := Versions.app,
-      scalaVersion := Versions.scala,
       libraryDependencies ++= Dependencies.webapp,
       // dependsOn
       compile in Compile <<= (compile in Compile) dependsOn (fastOptJS in (scalajs, Compile)),
@@ -70,7 +79,6 @@ object ApplicationBuild extends Build with UniversalKeys {
     scalaJSSettings ++ Seq(
       name := scalajsSrcDir,
       version := Versions.app,
-      scalaVersion := Versions.scala,
       libraryDependencies ++= Dependencies.scalajs,
       // special settings
       persistLauncher := true,
@@ -87,7 +95,6 @@ object ApplicationBuild extends Build with UniversalKeys {
     Seq(
       name := toolsSrcDir,
       version := Versions.app,
-      scalaVersion := Versions.scala,
       resolvers += Resolver.sonatypeRepo("public"),
       libraryDependencies ++= Dependencies.tools
     )
