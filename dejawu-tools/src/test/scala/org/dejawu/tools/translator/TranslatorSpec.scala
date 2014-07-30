@@ -6,8 +6,6 @@ import org.scalatest._
 
 class TranslatorSpec extends FeatureSpec with GivenWhenThen {
 
-  val tool = new Translator
-
   feature("Ability parse command line arguments") {
     scenario("Parsing a command line with simple file names") {
       val cmd = new CLI(Array("Example.html", "Example.scala")).parse

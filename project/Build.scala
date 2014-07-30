@@ -125,9 +125,8 @@ object Dependencies {
     "org.scalatest" %% "scalatest" % "2.2.0" )
 
   val tools   = scalatest ++ Seq(
-    //XXX "org.rogach" % "scallop_2.10" % Versions.scallop,
-    "com.github.scopt"       %% "scopt"   % Versions.scopt,
-    "org.ccil.cowan.tagsoup" %  "tagsoup" % Versions.tagsoup )
+    "com.github.scopt"       %% "scopt"     % Versions.scopt,
+    "org.ccil.cowan.tagsoup" %  "tagsoup"   % Versions.tagsoup )
 
   val shared  = utest ++ Seq(
     "org.scala-lang.modules.scalajs" %%% "scalajs-dom" % Versions.scalajsDom,
@@ -144,7 +143,7 @@ object Versions {
   val app = "0.1.0-SNAPSHOT"
   val scala = "2.10.4"
   val scalajsDom = "0.6"
-  val scalatags = "0.3.8-1"
+  val scalatags = "0.3.8-2"
   val scopt = "3.2.0"
   val tagsoup = "1.2.1"
 }
