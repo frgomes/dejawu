@@ -5,8 +5,8 @@ import org.scalatest._
 
 
 class TranslatorSpec extends FeatureSpec with GivenWhenThen {
-
   feature("Ability parse command line arguments") {
+/*
     scenario("Parsing a command line with simple file names") {
       val cmd = new CLI(Array("Example.html", "Example.scala")).parse
       assert( cmd.isDefined )
@@ -198,27 +198,28 @@ class TranslatorSpec extends FeatureSpec with GivenWhenThen {
       val os = CLI.outputStream(Some(cmd.get.output))
       tool.translate( pkgname, clsname, is, os )
     }
+ */
 
     scenario("Translate Dojo Demo 'Theme Previewer'") {
       val fqcn  = "org.dejawu.demos.ThemePreviewer"
       val html  = "https://raw.githubusercontent.com/dojo/demos/master/themePreviewer/demo.html"
       val scala = "dejawu-scalajs/src/main/scala/org/dejawu/demos/ThemePreviewer.scala"
-      val cmd = new CLI(Array("-m", fqcn, html, scala)).parse
+      val cmd = new CLI(Array("-k", "-m", fqcn, html, scala)).parse
       assert(cmd.isDefined)
       val tool = new Translator
       val pkgname  = Option(cmd.get.pkgname)
       val clsname  = Option(cmd.get.clsname)
       val is = CLI.inputStream(Some(cmd.get.input))
       val os = CLI.outputStream(Some(cmd.get.output))
-      tool.translate( pkgname, clsname, is, os )
+      tool.translate( cmd.get, is, os )
     }
   }
 
-  private def snippet(pkgname: String, clsname: String, html: String, scala: String) : Unit = {
+  private def snippet(cmd: Cmd, html: String, scala: String) : Unit = {
     import java.io._
     val tool = new Translator
     val os = new ByteArrayOutputStream
-    tool.translate(Option(pkgname), Option(clsname), new ByteArrayInputStream(html.getBytes("UTF-8")), os)
+    tool.translate(cmd, new ByteArrayInputStream(html.getBytes("UTF-8")), os)
     assert(new String(os.toByteArray, "UTF-8") === scala)
   }
 
