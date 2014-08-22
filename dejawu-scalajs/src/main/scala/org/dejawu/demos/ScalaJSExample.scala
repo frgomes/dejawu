@@ -11,27 +11,12 @@ import org.dejawu.DojoText.all._
 object ScalaJSExample extends js.JSApp {
  
   def main() = {
-    val container = g.document.getElementById("container")
-    container.innerHTML = render().toString()
+    g.document.body.removeChild( g.document.getElementById("loading") )
+    g.document.getElementById("container").innerHTML = render().toString()
   }
  
   private def render() =
-body(`class` := "claro")(
-  scalatags.Text.tags2.style(`type` := "text/css")("""
-    html, body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        overflow:hidden;
-    }
-
-    #borderContainer {
-        width: 100%;
-        height: 100%;
-    }
-
-"""),
-  dijit.layout.BorderContainer(`data-dojo-props` := "gutters:true, liveSplitters:false", id := "borderContainer")(
+  dijit.layout.BorderContainer(`data-dojo-props` := "gutters:true, liveSplitters:false", id := "borderContainer", width := "100%", height := "100%")(
     dijit.layout.ContentPane(`data-dojo-props` := "region:'top', splitter:false")("dejawu Elements"),
     dijit.layout.AccordionContainer(style := "width: 300px;", `data-dojo-props` := "minSize:20, region:'leading', splitter:true", id := "leftAccordion")(
       dijit.layout.AccordionPane(selected := "true", title := "Tree")(
@@ -134,6 +119,6 @@ Work in progress
         """),
       dijit.layout.ContentPane(title := "What else?", `data-dojo-props` := "closable:true")("""
             To be done
-        """))))
+        """)))
 
 }

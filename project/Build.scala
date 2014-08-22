@@ -24,7 +24,8 @@ object ApplicationBuild extends Build with UniversalKeys {
 
   override lazy val settings = super.settings :+ {
     crossScalaVersions := Seq(
-      "2.10.2", "2.10.3", "2.10.4" // FIXME: , "2.11.0", "2.11.1", "2.11.2"
+      // "2.10.4",
+      "2.11.2"
     )}
 
 
@@ -148,9 +149,8 @@ object Dependencies {
 
 object Versions {
   val app = "0.1.0-SNAPSHOT"
-  val scala = "2.10.4"
   val scalajsDom = "0.6"
-  val scalatags = "0.3.8-2"
+  val scalatags = "0.4.0"
   val scopt = "3.2.0"
   val tagsoup = "1.2.1"
 }
