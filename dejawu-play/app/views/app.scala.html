@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>dejawu</title>
-  <script>dojoConfig = { parseOnLoad: false, async: false };</script>
+  <script>dojoConfig = { parseOnLoad: false, async: true };</script>
   <script src="http://ajax.googleapis.com/ajax/libs/dojo/1.10.0/dojo/dojo.js"></script>
   <link rel="stylesheet" media="screen" href="http://ajax.googleapis.com/ajax/libs/dojo/1.10.0/dijit/themes/claro/claro.css">
   <!--
@@ -32,23 +32,38 @@
       margin: 0;
       overflow:hidden;
     }
-    #container {
+    #_container {
       width: 100%;
       height: 100%;
     }
   </style>
 </head>
 <body>
-  <div id="loading">Loading<BR/><img src="@routes.Assets.at("ajax-loader.gif")"/></div>
-  <div id="container" class="claro"></div>
+  <div id="_loading">Loading<br/><img src="@routes.Assets.at("ajax-loader.gif")"/></div>
+  <div id="_container" class="claro"></div>
   <script type="text/javascript" src="@routes.Assets.at("javascripts/dejawu-scalajs-fastopt.js")"></script>
-  <script type="text/javascript" src="@routes.Assets.at("javascripts/dejawu-scalajs-launcher.js")"></script>
+
+  <!-- Calling convention 1: Generated script calls your `main()` function -->
+  <!-- script type="text/javascript" src="@routes.Assets.at("javascripts/dejawu-scalajs-launcher.js")"></script -->
+
   <script>
-  require(["dijit/registry", "dojo/parser", "dojo/json", "dojo/_base/config", "dijit/Dialog", "dojo/domReady!"],
-  function(registry, parser, JSON, config) {
-    // Explicitly parse the page
+  require(["dojo/dom", "dojo/parser", "dojo/_base/config", "dojo/domReady!"],
+  function(dom, parser, config) {
+  
+    // Calling convention 2: You decide when your `main()` function should be called
+    //-- ((typeof global === "object" && global && global["Object"] === Object) ? global : this)
+    //--   ["org"]["dejawu"]["demos"]["ScalaJSExample"]().main();
+
+    // Calling convention 3 (best!): call the rendering function exposed by your ScalaJS project
+    dom.byId("_container").innerHTML = _ScalaJSExample().renderText();
+  
     parser.parse();
+
+    // remove progress indicator
+    var loading = dom.byId("_loading");
+    loading.parentNode.removeChild(loading);
   });
   </script>
+  
 </body>
 </html>

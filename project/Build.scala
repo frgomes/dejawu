@@ -24,8 +24,8 @@ object ApplicationBuild extends Build with UniversalKeys {
 
   override lazy val settings = super.settings :+ {
     crossScalaVersions := Seq(
-      // "2.10.4",
-      "2.11.2"
+      // the first version is the preferred one
+      "2.11.2", "2.10.4"
     )}
 
 
@@ -118,9 +118,10 @@ object ApplicationBuild extends Build with UniversalKeys {
   }
 
   // The new 'start' command optimises the JS before calling the Play 'start' renamed 'play-start'
-  val preStartCommand = Command.args("start", "<port>") { (state: State, args: Seq[String]) =>
-    Project.runTask(fullOptJS in (scalajs, Compile), state)
-    state.copy(remainingCommands = ("play-start " + args.mkString(" ")) +: state.remainingCommands)
+  val preStartCommand = Command.args("start", "<port>") {
+    (state: State, args: Seq[String]) =>
+      Project.runTask(fullOptJS in (scalajs, Compile), state)
+      state.copy(remainingCommands = ("play-start " + args.mkString(" ")) +: state.remainingCommands)
   }
 }
 

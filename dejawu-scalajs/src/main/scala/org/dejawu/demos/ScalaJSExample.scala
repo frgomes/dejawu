@@ -2,21 +2,67 @@ package org.dejawu.demos
 
 import scala.scalajs.js
 import js.annotation.JSExport
-import js.Dynamic.{ global => g }
  
-import scalatags.Text.all._
-import org.dejawu.DojoText.all._
- 
- 
+
 object ScalaJSExample extends js.JSApp {
- 
+
+  import js.Dynamic.{ global => g }
+
+  /**
+    * This is an example about how your main program could wire itself to the HTML page
+    * which called it. Notice that the name of the container is hardcoded which, well, ...
+    * it's definitely not a very good practice.
+    *
+    * A better approach is exposing an object which provides function `render` which
+    * produces content. Then your caller HTML page would be responsible for wiring these
+    * contents to a given container.
+    */
   def main() = {
-    g.document.body.removeChild( g.document.getElementById("loading") )
-    g.document.getElementById("container").innerHTML = render().toString()
+    g.document.getElementById("_container").innerHTML = _ScalaJSExample.renderText()
   }
- 
-  private def render() =
-  dijit.layout.BorderContainer(`data-dojo-props` := "gutters:true, liveSplitters:false", id := "borderContainer", width := "100%", height := "100%")(
+}
+
+
+@JSExport
+object _ScalaJSExample {
+
+  import org.scalajs.dom
+  import scalatags.Text.all._
+  import org.dejawu.DojoText.all._
+
+
+  /**
+    * This function is responsible for producing contents as text.
+    */
+  @JSExport
+  def renderText() : String = render().toString()
+
+
+  /**
+    * This function is responsible for producing contents as a DOM tree.
+    *
+    * NOT IMPLEMENTED YET
+    */
+  @JSExport
+  def renderJS() : dom.Node = ???
+
+
+  /**
+    * This function is responsible for producing content which later will be displayed as part of a HTML page.
+    *
+    * Remember to make the main Dojo container fill the entire visible area of its container from the HTML page.
+    * Notice that `width` and `height` are 100% of the container area in the example below:
+    * {{{
+    * def render() =
+    *   dijit.layout.BorderContainer(id := "dojo-container", width := "100%", height := "100%")(...)
+    * }}}
+    *
+    * The HTML page which wires contents produced by `render` must also guarantee that the desired area of
+    * the screen is filled in. In the particular case of single-page web applications, you need to guarantee
+    * that the topmost visible container fills in the screen entirely.
+    */
+  def render() : scalatags.Text.TypedTag[Nothing] =
+    dijit.layout.BorderContainer(`data-dojo-props` := "gutters:true, liveSplitters:false", id := "borderContainer", width := "100%", height := "100%")(
     dijit.layout.ContentPane(`data-dojo-props` := "region:'top', splitter:false")("dejawu Elements"),
     dijit.layout.AccordionContainer(style := "width: 300px;", `data-dojo-props` := "minSize:20, region:'leading', splitter:true", id := "leftAccordion")(
       dijit.layout.AccordionPane(selected := "true", title := "Tree")(
@@ -63,23 +109,19 @@ Work in progress
         div()("""
                 dijit/form/Button
                 """,
-          dijit.form.Button(`type` := "button")("""Click me too!
-                    """,
+          dijit.form.Button(`type` := "button")("""Click me too!""",
             script(`data-dojo-args` := "evt", `data-dojo-event` := "click", `type` := "dojo/on")("""
                         require([&quot;dojo/dom&quot;], function(dom){
                             dom.byId(&quot;result2&quot;).innerHTML += &quot;Thank you! &quot;;
                         });
                     """)),
-          dijit.form.Button(`data-dojo-props` := "iconClass:'dijitEditorIcon dijitEditorIconCut', showLabel: false", `type` := "button")("""clear
-                    """,
+          dijit.form.Button(`data-dojo-props` := "iconClass:'dijitEditorIcon dijitEditorIconCut', showLabel: false", `type` := "button")("""clear""",
             script(`data-dojo-args` := "evt", `data-dojo-event` := "click", `type` := "dojo/on")("""
                         require([&quot;dojo/dom&quot;], function(dom){
                             dom.byId(&quot;result2&quot;).innerHTML = &quot;&quot;;
                         });
                     """)),
-          dijit.form.ToggleButton(`data-dojo-props` := "iconClass:'dijitCheckBoxIcon', checked: true", `type` := "submit")("""
-                    Toggle me
-                """),
+          dijit.form.ToggleButton(`data-dojo-props` := "iconClass:'dijitCheckBoxIcon', checked: true", `type` := "submit")("""Toggle me"""),
           div(id := "result2")),
         div()("""
                 dijit/form/Select (TODO: store)

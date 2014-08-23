@@ -1,6 +1,16 @@
 *dejawu* provides Dojo Toolkit wrappers for ScalaJS with Scalatags
 
 
+Requirements
+============
+
+This project build with SBT 0.13 and tested under Java 8 and Scala 2.11.2
+
+We are cross building for Scala 2.10.4 and Scala 2.11.2 but the underlying
+Java version is always Java 8. If you find troubles with other versions of
+Java or Scala, please let me know.
+
+
 Quick guide for the impatient
 =============================
 
@@ -20,7 +30,7 @@ Then you can build Dejawu and start the web server:
 
     $ cd ~/workspace
     $ git clone http://github.com/frgomes/dejawu   
-    $ sbt clean update compile run
+    $ sbt clean update +test:compile ~run
 
 
 Finally, visit these pages:
