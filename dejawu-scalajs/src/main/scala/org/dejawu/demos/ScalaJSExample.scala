@@ -13,18 +13,14 @@ object ScalaJSExample extends js.JSApp {
     * which called it. Notice that the name of the container is hardcoded which, well, ...
     * it's definitely not a very good practice.
     *
-    * A better approach is exposing an object which provides function `render` which
-    * produces content. Then your caller HTML page would be responsible for wiring these
+    * A better approach is calling functions `renderText` and `renderJS` which produce
+    * content. Then your caller HTML page would be responsible for wiring these
     * contents to a given container.
     */
   def main() = {
-    g.document.getElementById("_container").innerHTML = _ScalaJSExample.renderText()
+    g.document.getElementById("_container").innerHTML = renderText()
   }
-}
 
-
-@JSExport
-object _ScalaJSExample {
 
   import org.scalajs.dom
   import scalatags.Text.all._
@@ -40,11 +36,9 @@ object _ScalaJSExample {
 
   /**
     * This function is responsible for producing contents as a DOM tree.
-    *
-    * NOT IMPLEMENTED YET
     */
-  @JSExport
-  def renderJS() : dom.Node = ???
+  //TODO: @JSExport
+  def renderJS() : dom.Node = ??? // NOT IMPLEMENTED YET
 
 
   /**
@@ -61,7 +55,7 @@ object _ScalaJSExample {
     * the screen is filled in. In the particular case of single-page web applications, you need to guarantee
     * that the topmost visible container fills in the screen entirely.
     */
-  def render() : scalatags.Text.TypedTag[Nothing] =
+  private def render() : scalatags.Text.TypedTag[Nothing] =
     dijit.layout.BorderContainer(`data-dojo-props` := "gutters:true, liveSplitters:false", id := "borderContainer", width := "100%", height := "100%")(
     dijit.layout.ContentPane(`data-dojo-props` := "region:'top', splitter:false")("dejawu Elements"),
     dijit.layout.AccordionContainer(style := "width: 300px;", `data-dojo-props` := "minSize:20, region:'leading', splitter:true", id := "leftAccordion")(
@@ -111,14 +105,14 @@ Work in progress
                 """,
           dijit.form.Button(`type` := "button")("""Click me too!""",
             script(`data-dojo-args` := "evt", `data-dojo-event` := "click", `type` := "dojo/on")("""
-                        require([&quot;dojo/dom&quot;], function(dom){
-                            dom.byId(&quot;result2&quot;).innerHTML += &quot;Thank you! &quot;;
+                        require(["dojo/dom"], function(dom){
+                            dom.byId("result2").innerHTML += "Thank you!";
                         });
                     """)),
           dijit.form.Button(`data-dojo-props` := "iconClass:'dijitEditorIcon dijitEditorIconCut', showLabel: false", `type` := "button")("""clear""",
             script(`data-dojo-args` := "evt", `data-dojo-event` := "click", `type` := "dojo/on")("""
-                        require([&quot;dojo/dom&quot;], function(dom){
-                            dom.byId(&quot;result2&quot;).innerHTML = &quot;&quot;;
+                        require(["dojo/dom"], function(dom){
+                            dom.byId("result2").innerHTML = "";
                         });
                     """)),
           dijit.form.ToggleButton(`data-dojo-props` := "iconClass:'dijitCheckBoxIcon', checked: true", `type` := "submit")("""Toggle me"""),

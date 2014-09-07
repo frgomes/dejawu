@@ -68,11 +68,13 @@ object ApplicationBuild extends Build with UniversalKeys {
       dist               <<= dist                 dependsOn (fullOptJS in (scalajs, Compile))
                                                   dependsOn (assembly  in tools),
       // special settings
+      persistLauncher := false, // we don't need a package launcher
       scalajsOutputDir := (crossTarget in Compile).value / "classes" / "public" / "javascripts",
       commands += preStartCommand
     ) ++ (
       // ask scalajs project to put its outputs in scalajsOutputDir
-      Seq(packageExternalDepsJS, packageInternalDepsJS, packageExportedProductsJS, packageLauncher, fastOptJS, fullOptJS)
+      //Seq(packageExternalDepsJS, packageInternalDepsJS, packageExportedProductsJS, packageLauncher, fastOptJS, fullOptJS)
+      Seq(packageExternalDepsJS, packageInternalDepsJS, packageExportedProductsJS, fastOptJS, fullOptJS)
         .map { packageJSKey => crossTarget in (scalajs, Compile, packageJSKey) := scalajsOutputDir.value }
     ) ++ sharedDirectorySettings
 

@@ -38,25 +38,20 @@
     }
   </style>
 </head>
-<body>
+<body class="claro">
   <div id="_loading">Loading<br/><img src="@routes.Assets.at("ajax-loader.gif")"/></div>
-  <div id="_container" class="claro"></div>
+  <div id="_container"></div>
   <script type="text/javascript" src="@routes.Assets.at("javascripts/dejawu-scalajs-fastopt.js")"></script>
-
-  <!-- Calling convention 1: Generated script calls your `main()` function -->
-  <!-- script type="text/javascript" src="@routes.Assets.at("javascripts/dejawu-scalajs-launcher.js")"></script -->
 
   <script>
   require(["dojo/dom", "dojo/parser", "dojo/_base/config", "dojo/domReady!"],
   function(dom, parser, config) {
   
     // Calling convention 2: You decide when your `main()` function should be called
-    //-- ((typeof global === "object" && global && global["Object"] === Object) ? global : this)
-    //--   ["org"]["dejawu"]["demos"]["ScalaJSExample"]().main();
+    var app = ((typeof global === "object" && global && global["Object"] === Object) ? global : this)
+                ["org"]["dejawu"]["demos"]["ScalaJSExample"]();
+    dom.byId("_container").innerHTML = app.renderText();
 
-    // Calling convention 3 (best!): call the rendering function exposed by your ScalaJS project
-    dom.byId("_container").innerHTML = _ScalaJSExample().renderText();
-  
     parser.parse();
 
     // remove progress indicator
